@@ -1,0 +1,14 @@
+package cn.cedar.dao;
+
+import cn.cedar.data.Param;
+
+import java.util.List;
+import java.util.Map;
+
+public interface  ADao{
+    Integer insert(@Param("a") Integer a, @Param("b")String b);
+    List<Map<String, Object>> select(@Param("a") Integer a);
+    Integer xiugai(@Param("id")Integer id,@Param("a") Integer a,@Param("b") String b);
+    Integer del(@Param("id")Integer id);
+    Integer count(@Param("a")Integer a,@Param("b")String b);
+}
