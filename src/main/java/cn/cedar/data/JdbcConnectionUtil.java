@@ -38,7 +38,7 @@ public class JdbcConnectionUtil {
 			password = prop.getProperty("password");
 			driverClass = prop.getProperty("driverClass");
 
-			Class.forName(driverClass);
+			Class.forName(driverClass.trim());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
