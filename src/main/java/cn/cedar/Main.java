@@ -2,14 +2,16 @@ package cn.cedar;
 
 import cn.cedar.dao.ADao;
 import cn.cedar.data.HandleFactory;
+import cn.cedar.data.JdbcUtil;
 
 public class Main {
 
 
 
     public static void main(String[] args)  {
-        HandleFactory<ADao> factory=new HandleFactory();
-        ADao d=factory.getInstance(ADao.class);
+        JdbcUtil.register();
+        HandleFactory factory=new HandleFactory();
+        ADao d= (ADao) factory.getInstance(ADao.class);
         long time=System.currentTimeMillis();
         /*
         for(int i=100;i<=1000;i++){

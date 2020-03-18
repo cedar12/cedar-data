@@ -17,21 +17,19 @@ public class JdbcUtil {
 
 	static {
 
-		//注册驱动程序
+
+	}
+
+	public static void register(){
 		try {
 			Properties prop = new Properties();
-
 			Class clazz = JdbcUtil.class;
-
 			InputStream in = clazz.getResourceAsStream("/jdbc.properties");
-
 			prop.load(in);
-
 			url = prop.getProperty("url");
 			user = prop.getProperty("user");
 			password = prop.getProperty("password");
 			driverClass = prop.getProperty("driverClass");
-
 			Class.forName(driverClass.trim());
 		} catch (Exception e) {
 			e.printStackTrace();

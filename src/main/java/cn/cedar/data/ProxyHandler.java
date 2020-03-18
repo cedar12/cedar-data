@@ -152,17 +152,22 @@ public class ProxyHandler implements InvocationHandler {
         int type=type(t);
         if(t==null||type<4){
             if(isDQL(sql)){
-                returnObj=JdbcExcuteUtil.excuteQueryCount(sql);
+                returnObj=JdbcUtil.excuteQueryCount(sql);
                 if(type<3){
                     returnObj=Integer.parseInt(returnObj.toString());
                 }
             }else {
-                returnObj = JdbcExcuteUtil.excute(sql);
+                returnObj = JdbcUtil.excute(sql);
             }
         }else{
-            returnObj=JdbcExcuteUtil.excuteQuery(sql);
+            returnObj=JdbcUtil.excuteQuery(sql);
         }
         return returnObj;
+    }
+
+    public Object packDto(Type t,List<Map<String,Object>> mapList){
+
+        return null;
     }
 
     public boolean isDQL(String sql){
