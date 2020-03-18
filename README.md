@@ -27,7 +27,7 @@ public class Main{
 }
 ```
 动态sql文件
->> 动态sql文件需对应类文件
+>注：动态sql文件所在位置需要和类文件位置对应
 ```
 /*插入数据*/
 insert java.lang.Integer: {
