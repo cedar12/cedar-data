@@ -4,7 +4,7 @@ insert into test(id#{a!=null?',a':''}#{b!=null?',b':''}) values(null#{a!=null?',
 };
 /*查询数据返回map*/
   select Map  :{
-select * from test where 1=1 #{a!=null?'and  a='+a:''}
+select * from wx_warn where 1=1 #{a!=null?'and  a='+a:''}
 };
 /*
 查询数据返回dto
