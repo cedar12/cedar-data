@@ -12,7 +12,7 @@ select * from test where 1=1 #{a!=null?'and  a='+a:''}
   selectDto cn.cedar.dto.TestDto  :{
 select id,b from test
 };
-xiugai java.lang.Integer:{
+update java.lang.Integer:{
 update test set  a=#{a} #{b!=null?' and b='+b:''}  where id=#{id}
 };
 del java.lang.Integer:{

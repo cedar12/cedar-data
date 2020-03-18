@@ -9,7 +9,6 @@ public class Main {
 
 
     public static void main(String[] args)  {
-        JdbcUtil.register();
         HandleFactory factory=new HandleFactory();
         ADao d= (ADao) factory.getInstance(ADao.class);
         long time=System.currentTimeMillis();

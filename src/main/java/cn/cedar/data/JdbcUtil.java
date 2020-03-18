@@ -16,11 +16,11 @@ public class JdbcUtil {
 
 
 	static {
-
+		register();
 
 	}
 
-	public static void register(){
+	private static void register(){
 		try {
 			Properties prop = new Properties();
 			Class clazz = JdbcUtil.class;
