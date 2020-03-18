@@ -39,6 +39,8 @@ public class ProxyHandler implements InvocationHandler {
         }catch(Exception e){
             e.printStackTrace();
         }
+        Pattern pr = Pattern.compile("\\/\\*.*?\\*\\/",Pattern.DOTALL);
+        content = pr.matcher(content).replaceAll("");
 
         Method[] methods=cls.getMethods();
         for(Method method:methods){
