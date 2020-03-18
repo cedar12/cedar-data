@@ -1,13 +1,53 @@
 package cn.cedar.data;
 
+import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
 
-public class JdbcExcuteUtil {
+public class JdbcUtil {
 
-	public static Connection getConnection(){
-		return JdbcConnectionUtil.getConnection();
+	private static String url = null;
+
+	private static String user = null;
+
+	private static String password = null;
+
+	private static String driverClass = null;
+
+
+	static {
+
+		//注册驱动程序
+		try {
+			Properties prop = new Properties();
+
+			Class clazz = JdbcUtil.class;
+
+			InputStream in = clazz.getResourceAsStream("/jdbc.properties");
+
+			prop.load(in);
+
+			url = prop.getProperty("url");
+			user = prop.getProperty("user");
+			password = prop.getProperty("password");
+			driverClass = prop.getProperty("driverClass");
+
+			Class.forName(driverClass.trim());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
+
+	public static Connection getConnection() {
+		try {
+			Connection conn = DriverManager.getConnection(url, user, password);
+			return conn;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+
 
 	/**
 	 *  执行结果为多条数据的DQL
