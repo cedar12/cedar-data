@@ -7,10 +7,7 @@ import javax.script.ScriptException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -21,6 +18,7 @@ import java.util.regex.Pattern;
 public class ProxyHandler implements InvocationHandler {
 
     public static Map<Method,String> sqlMap=new HashMap<>();
+    public static Map<Method,String> returnMap=new HashMap<>();
 
     public ProxyHandler(Class<?> cls,String path){
         URL url = ProxyHandler.class.getClassLoader().getResource("");
@@ -41,10 +39,11 @@ public class ProxyHandler implements InvocationHandler {
         }catch(Exception e){
             e.printStackTrace();
         }
+
         Method[] methods=cls.getMethods();
         for(Method method:methods){
 
-            String pattern = method.getName()+"\\s*?:\\s*?\\{(.*?)\\}\\s*?;";
+            String pattern = "\\s+?"+method.getName()+"\\s+?(.*?)\\s*?:\\s*?\\{((.*?))\\}\\s*?;";
 
             // 创建 Pattern 对象
             Pattern r = Pattern.compile(pattern,Pattern.DOTALL);
@@ -52,10 +51,12 @@ public class ProxyHandler implements InvocationHandler {
             // 现在创建 matcher 对象
             Matcher m = r.matcher(content);
             if (m.find( )) {
-                sqlMap.put(method,m.group(1).trim());
+                returnMap.put(method,m.group(1).trim());
+                sqlMap.put(method,m.group(2).trim());
             } else {
                 System.out.println(method.getName()+" NO MATCH");
             }
+
         }
     }
 
@@ -139,16 +140,19 @@ public class ProxyHandler implements InvocationHandler {
     }
 
     public Object impl(Method method,Object[] args){
-        Type t = method.getAnnotatedReturnType().getType();
         String regSql=sqlMap.get(method);
+        if(regSql==null){
+            return null;
+        }
         Map<String,Object> paramsMap=args(method,args);
         String sql=parseSql(regSql,paramsMap);
-        return exec(sql,t);
+        return exec(sql,method);
     }
 
-    public Object exec(String sql,Type t){
+    public Object exec(String sql,Method method){
         System.out.println(String.format("运行sql[%s]", sql));
         Object returnObj=null;
+        Type t = method.getAnnotatedReturnType().getType();
         int type=type(t);
         if(t==null||type<4){
             if(isDQL(sql)){
@@ -160,13 +164,50 @@ public class ProxyHandler implements InvocationHandler {
                 returnObj = JdbcUtil.excute(sql);
             }
         }else{
-            returnObj=JdbcUtil.excuteQuery(sql);
+            List<Map<String,Object>> listMap=JdbcUtil.excuteQuery(sql);
+            List<Object> returnList=packDto(method,JdbcUtil.formatHumpNameForList(listMap));
+            if(returnList==null){
+                returnObj=listMap;
+            }else{
+                returnObj=returnList;
+            }
         }
         return returnObj;
     }
 
-    public Object packDto(Type t,List<Map<String,Object>> mapList){
-
+    public List<Object> packDto(Method method,List<Map<String,Object>> mapList){
+        Type t = method.getAnnotatedReturnType().getType();
+        String returnType=returnMap.get(method);
+        int type=type(t);
+        if((!"Map".equals(returnType))&&(!"java.util.Map".equals(returnType))&&type==4){
+            List<Object> list=new ArrayList<>();
+            try {
+                Class<?> cls=Class.forName(returnType);
+                for(int i=0;i<mapList.size();i++){
+                    Object obj=cls.newInstance();
+                    Map<String,Object> map=mapList.get(i);
+                    Set<Map.Entry<String,Object>> entrySet=map.entrySet();
+                    for(Map.Entry<String,Object> entry:entrySet){
+                        Field f=cls.getDeclaredField(entry.getKey());
+                        if(f!=null){
+                            f.setAccessible(true);
+                            f.set(obj,entry.getValue());
+                            f.setAccessible(false);
+                        }
+                    }
+                    list.add(obj);
+                }
+                return list;
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 

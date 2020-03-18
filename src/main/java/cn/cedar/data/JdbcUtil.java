@@ -255,6 +255,9 @@ public class JdbcUtil {
 
 	  public static String toFormatCol(String colName) {
 	    StringBuilder sb = new StringBuilder();
+	    if(!colName.contains("_")){
+	    	return colName;
+		}
 	    String[] str = colName.toLowerCase().split("_");
 	    int i = 0;
 	    for (String s : str) {
