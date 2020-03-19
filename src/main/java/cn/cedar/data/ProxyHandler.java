@@ -99,24 +99,39 @@ public class ProxyHandler implements InvocationHandler {
     public Map<String, Object> args(Method method,Object[] args){
         Annotation[][] annos=method.getParameterAnnotations();
         Map<String,Object> paramsMap=new HashMap<>();
-        for (int i=0;i<annos.length;i++){
-            for(int j=0;j<annos[i].length;j++){
-                Annotation anno=annos[i][j];
-                if(anno!=null&&anno instanceof Param){
-                    Param param= (Param) anno;
-                    if(args[i]!=null&&args[i].getClass()==String.class){
-                        paramsMap.put(param.value().trim(), "'"+args[i]+"'");
-                    }else if(args[i]!=null&&args[i] instanceof Map){
-                        Set<Map.Entry<String,Object>> entrySet=((Map)args[i]).entrySet();
-                        for(Map.Entry<String,Object> entry:entrySet){
-                            if(entry.getValue()!=null&&entry.getValue() instanceof String){
-                                paramsMap.put(param.value().trim(), "'"+entry.getValue()+"'");
-                            }else {
+        List<Object> tmpArgs=new ArrayList<>();
+        for (int i=0;i<args.length;i++){
+            if(args[i] instanceof Map){
+                Set<Map.Entry<String, Object>> entrySet = ((Map) args[i]).entrySet();
+                for (Map.Entry<String, Object> entry : entrySet) {
+                    if (entry.getValue() != null && entry.getValue() instanceof String) {
+                        paramsMap.put(entry.getKey().trim(), "'" + entry.getValue() + "'");
+                    } else {
+                        paramsMap.put(entry.getKey().trim(), entry.getValue());
+                    }
+                }
+            }else {
+                tmpArgs.add(args[i]);
+            }
+        }
+        for(int i=0;i<tmpArgs.size();i++){
+            for (int j = 0; j < annos[i].length; j++) {
+                Annotation anno = annos[i][j];
+                if (anno != null && anno instanceof Param) {
+                    Param param = (Param) anno;
+                    if (tmpArgs.get(i)!= null && tmpArgs.get(i).getClass() == String.class) {
+                        paramsMap.put(param.value().trim(), "'" + tmpArgs.get(i) + "'");
+                    } else if (tmpArgs.get(i) != null && tmpArgs.get(i) instanceof Map) {
+                        Set<Map.Entry<String, Object>> entrySet = ((Map) tmpArgs.get(i)).entrySet();
+                        for (Map.Entry<String, Object> entry : entrySet) {
+                            if (entry.getValue() != null && entry.getValue() instanceof String) {
+                                paramsMap.put(param.value().trim(), "'" + entry.getValue() + "'");
+                            } else {
                                 paramsMap.put(entry.getKey(), entry.getValue());
                             }
                         }
-                    }else {
-                        paramsMap.put(param.value().trim(), args[i]);
+                    } else {
+                        paramsMap.put(param.value().trim(), tmpArgs.get(i));
                     }
                 }
             }
