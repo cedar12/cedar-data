@@ -1,5 +1,7 @@
 package cn.cedar.data;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 class HandleConstant {
@@ -24,7 +26,8 @@ class HandleConstant {
     protected static Pattern ANNOTATION = Pattern.compile("\\/\\*.*?\\*\\/",Pattern.DOTALL);
 
     public static void main(String[] args) {
-        System.out.println(SELECT_SYMBOL.toUpperCase());
+        Integer a=1;
+        System.out.println(a instanceof Number);
     }
 
 }

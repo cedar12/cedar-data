@@ -105,6 +105,15 @@ public class ProxyHandler implements InvocationHandler {
                 Param param= (Param) anno;
                 if(args[i]!=null&&args[i].getClass()==String.class){
                     paramsMap.put(param.value().trim(), "'"+args[i]+"'");
+                }else if(args[i]!=null&&args[i] instanceof Map){
+                    Set<Map.Entry<String,Object>> entrySet=((Map)args[i]).entrySet();
+                    for(Map.Entry<String,Object> entry:entrySet){
+                        if(entry.getValue()!=null&&entry.getValue() instanceof String){
+                            paramsMap.put(param.value().trim(), "'"+entry.getValue()+"'");
+                        }else {
+                            paramsMap.put(entry.getKey(), entry.getValue());
+                        }
+                    }
                 }else {
                     paramsMap.put(param.value().trim(), args[i]);
                 }

@@ -10,7 +10,7 @@ select * from test where 1=1 #{a!=null?'and  a='+a:''}
 查询数据返回dto
 */
 selectDto cn.cedar.dto.TestDto:{
-select id,b from test
+select id,b,c from test
 };
 update:{
 update test set  a=#{a} #{b!=null?' and b='+b:''}  where id=#{id}

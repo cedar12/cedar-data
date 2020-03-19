@@ -2,15 +2,20 @@ package cn.cedar;
 
 import cn.cedar.dao.ADao;
 import cn.cedar.data.HandleFactory;
+import cn.cedar.dto.TestDto;
 
 public class Main {
+
+    public static void p(TestDto dto){
+        System.out.println(dto.getC().toGMTString());
+    }
 
     public static void main(String[] args)  {
         HandleFactory factory=new HandleFactory();
         ADao d= (ADao) factory.getInstance(ADao.class);
 
         long time=System.currentTimeMillis();
-        d.selectDto().forEach(System.out::println);
+        d.selectDto().forEach(Main::p);
         System.out.println("耗时："+(System.currentTimeMillis() - time));
         System.out.println("===========");
         time=System.currentTimeMillis();
