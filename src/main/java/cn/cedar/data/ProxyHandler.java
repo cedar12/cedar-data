@@ -39,22 +39,21 @@ public class ProxyHandler implements InvocationHandler {
         }catch(Exception e){
             e.printStackTrace();
         }
-        Pattern pr = Pattern.compile("\\/\\*.*?\\*\\/",Pattern.DOTALL);
-        content = pr.matcher(content).replaceAll("");
-
+        content = HandleConstant.ANNOTATION.matcher(content).replaceAll("");
+        HandleConstant.ANNOTATION = Pattern.compile("\r\n",Pattern.DOTALL);
+        content = HandleConstant.ANNOTATION.matcher(content).replaceAll("");
         Method[] methods=cls.getMethods();
         for(Method method:methods){
-
-            String pattern = "\\s+?"+method.getName()+"\\s+?(.*?)\\s*?:\\s*?\\{((.*?))\\}\\s*?;";
-
-            // 创建 Pattern 对象
+            String pattern = "\\s*?"+method.getName()+"((\\s+?(.*?)\\s*?)|\\s*?):\\s*?\\{((.*?))\\}\\s*?;";
             Pattern r = Pattern.compile(pattern,Pattern.DOTALL);
-
-            // 现在创建 matcher 对象
             Matcher m = r.matcher(content);
-            if (m.find( )) {
-                returnMap.put(method,m.group(1).trim());
-                sqlMap.put(method,m.group(2).trim());
+            if (m.find( )&&m.groupCount()>1) {
+                String returnType=m.group(m.groupCount()-2);
+                if(returnType==null){
+                    returnType="";
+                }
+                returnMap.put(method,returnType.trim());
+                sqlMap.put(method,m.group(m.groupCount()-1).trim());
             } else {
                 System.out.println(method.getName()+" NO MATCH");
             }
@@ -79,16 +78,16 @@ public class ProxyHandler implements InvocationHandler {
         int startFlag = 0;
         int endFlag = 0;
         for (int i = 0; i < msg.length(); i++) {
-            if (msg.charAt(i) == '{') {
+            if (msg.charAt(i) == HandleConstant.START_SYMBOL) {
                 startFlag++;
                 if (startFlag == endFlag + 1) {
                     start = i;
                 }
-            } else if (msg.charAt(i) == '}') {
+            } else if (msg.charAt(i) == HandleConstant.END_SYMBOL) {
                 endFlag++;
                 if (endFlag == startFlag) {
                     Map<String,String> map=new HashMap<>();
-                    map.put(msg.substring(start + 1, i),(start+1)+","+i);
+                    map.put(msg.substring(start + 1, i),(start+1)+HandleConstant.SPLIT_SYMBOL+i);
                     list.add(map);
 
                 }
@@ -132,7 +131,7 @@ public class ProxyHandler implements InvocationHandler {
                     }
                 }
                 Object eval = eval(e.getKey(), var);
-                String[] index=e.getValue().split(",");
+                String[] index=e.getValue().split(HandleConstant.SPLIT_SYMBOL);
                 String startSql=sql.substring(0,Integer.parseInt(index[0])-2);
                 String endSql=sql.substring(Integer.parseInt(index[1])+1,sql.length());
                 sql = startSql+eval+endSql;
@@ -152,6 +151,7 @@ public class ProxyHandler implements InvocationHandler {
     }
 
     public Object exec(String sql,Method method){
+        sql=sql.trim();
         System.out.println(String.format("运行sql[%s]", sql));
         Object returnObj=null;
         Type t = method.getAnnotatedReturnType().getType();
@@ -159,11 +159,14 @@ public class ProxyHandler implements InvocationHandler {
         if(t==null||type<4){
             if(isDQL(sql)){
                 returnObj=JdbcUtil.excuteQueryCount(sql);
-                if(type<3){
+                if(type==HandleConstant.TYPE_INT||type==HandleConstant.TYPE_INTEGER){
                     returnObj=Integer.parseInt(returnObj.toString());
                 }
             }else {
                 returnObj = JdbcUtil.excute(sql);
+                if(type==HandleConstant.TYPE_LONG||type==HandleConstant.TYPE_LONG_){
+                    returnObj=Long.parseLong(returnObj.toString());
+                }
             }
         }else{
             List<Map<String,Object>> listMap=JdbcUtil.excuteQuery(sql);
@@ -181,7 +184,7 @@ public class ProxyHandler implements InvocationHandler {
         Type t = method.getAnnotatedReturnType().getType();
         String returnType=returnMap.get(method);
         int type=type(t);
-        if((!"Map".equals(returnType))&&(!"java.util.Map".equals(returnType))&&type==4){
+        if((!HandleConstant.EMPTY_SYMBOL.equals(returnType.trim()))&&(!HandleConstant.MAP_SYMBOL.equals(returnType))&&(!HandleConstant.PACK_MAP_SYMBOL.equals(returnType))&&type==4){
             List<Object> list=new ArrayList<>();
             try {
                 Class<?> cls=Class.forName(returnType);
@@ -214,29 +217,29 @@ public class ProxyHandler implements InvocationHandler {
     }
 
     public boolean isDQL(String sql){
-        return sql.startsWith("select")||sql.startsWith("SELECT");
+        return sql.startsWith(HandleConstant.SELECT_SYMBOL)||sql.startsWith(HandleConstant.SELECT_SYMBOL.toUpperCase());
     }
 
     public int type(Type t){
         if(t==int.class){
-            return 0;
+            return HandleConstant.TYPE_INT;
         }
         if(t==Integer.class){
-            return 1;
+            return HandleConstant.TYPE_INTEGER;
         }
         if(t==long.class){
-            return 2;
+            return HandleConstant.TYPE_LONG;
         }
         if(t==Long.class){
-            return 3;
+            return HandleConstant.TYPE_LONG_;
         }
-        return 4;
+        return HandleConstant.TYPE_OTHER;
     }
 
 
     public Object eval(String reg,String var){
         ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByName("JavaScript");
+        ScriptEngine engine = manager.getEngineByName(HandleConstant.JS_SYMBOL);
         try {
             engine.eval("function parse_express() {"+var+"return " + reg + ";}");
         } catch (ScriptException e) {

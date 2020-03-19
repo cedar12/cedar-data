@@ -11,6 +11,6 @@ public interface  ADao{
     List<Map<String, Object>> select(@Param("a") Integer a);
     Integer update(@Param("id")Integer id,@Param("a") Integer a,@Param("b") String b);
     Integer del(@Param("id")Integer id);
-    Integer count(@Param("a")Integer a,@Param("b")String b);
+    int count(@Param("a")Integer a,@Param("b")String b);
     List<TestDto> selectDto();
 }
