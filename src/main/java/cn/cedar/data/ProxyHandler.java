@@ -97,8 +97,11 @@ public class ProxyHandler implements InvocationHandler {
     }
 
     public Map<String, Object> args(Method method,Object[] args){
-        Annotation[][] annos=method.getParameterAnnotations();
         Map<String,Object> paramsMap=new HashMap<>();
+        if(args==null){
+            return paramsMap;
+        }
+        Annotation[][] annos=method.getParameterAnnotations();
         List<Object> tmpArgs=new ArrayList<>();
         for (int i=0;i<args.length;i++){
             if(args[i] instanceof Map){
@@ -178,7 +181,7 @@ public class ProxyHandler implements InvocationHandler {
 
     public Object exec(String sql,Method method){
         sql=sql.trim();
-        System.out.println(String.format("运行sql[%s]", sql));
+        System.out.println(String.format("sql[%s]", sql));
         Object returnObj=null;
         Class<?> t=method.getReturnType();
         int type=type(t);
