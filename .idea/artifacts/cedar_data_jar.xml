@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="cedar-data:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/cedar_data_jar</output-path>
+    <root id="archive" name="cedar-data.jar">
+      <element id="module-output" name="cedar-data" />
+      <element id="module-test-output" name="cedar-data" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

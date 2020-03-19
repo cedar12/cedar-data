@@ -97,25 +97,27 @@ public class ProxyHandler implements InvocationHandler {
     }
 
     public Map<String, Object> args(Method method,Object[] args){
-        Parameter[] params=method.getParameters();
+        Annotation[][] annos=method.getParameterAnnotations();
         Map<String,Object> paramsMap=new HashMap<>();
-        for(int i=0;i<params.length;i++){
-            Annotation anno=params[i].getAnnotation(Param.class);
-            if(anno!=null){
-                Param param= (Param) anno;
-                if(args[i]!=null&&args[i].getClass()==String.class){
-                    paramsMap.put(param.value().trim(), "'"+args[i]+"'");
-                }else if(args[i]!=null&&args[i] instanceof Map){
-                    Set<Map.Entry<String,Object>> entrySet=((Map)args[i]).entrySet();
-                    for(Map.Entry<String,Object> entry:entrySet){
-                        if(entry.getValue()!=null&&entry.getValue() instanceof String){
-                            paramsMap.put(param.value().trim(), "'"+entry.getValue()+"'");
-                        }else {
-                            paramsMap.put(entry.getKey(), entry.getValue());
+        for (int i=0;i<annos.length;i++){
+            for(int j=0;j<annos[i].length;j++){
+                Annotation anno=annos[i][j];
+                if(anno!=null&&anno instanceof Param){
+                    Param param= (Param) anno;
+                    if(args[i]!=null&&args[i].getClass()==String.class){
+                        paramsMap.put(param.value().trim(), "'"+args[i]+"'");
+                    }else if(args[i]!=null&&args[i] instanceof Map){
+                        Set<Map.Entry<String,Object>> entrySet=((Map)args[i]).entrySet();
+                        for(Map.Entry<String,Object> entry:entrySet){
+                            if(entry.getValue()!=null&&entry.getValue() instanceof String){
+                                paramsMap.put(param.value().trim(), "'"+entry.getValue()+"'");
+                            }else {
+                                paramsMap.put(entry.getKey(), entry.getValue());
+                            }
                         }
+                    }else {
+                        paramsMap.put(param.value().trim(), args[i]);
                     }
-                }else {
-                    paramsMap.put(param.value().trim(), args[i]);
                 }
             }
         }
@@ -163,7 +165,7 @@ public class ProxyHandler implements InvocationHandler {
         sql=sql.trim();
         System.out.println(String.format("运行sql[%s]", sql));
         Object returnObj=null;
-        Type t = method.getAnnotatedReturnType().getType();
+        Class<?> t=method.getReturnType();
         int type=type(t);
         if(t==null||type<4){
             if(isDQL(sql)){
@@ -190,7 +192,7 @@ public class ProxyHandler implements InvocationHandler {
     }
 
     public List<Object> packDto(Method method,List<Map<String,Object>> mapList){
-        Type t = method.getAnnotatedReturnType().getType();
+        Class<?> t=method.getReturnType();
         String returnType=returnMap.get(method);
         int type=type(t);
         if((!HandleConstant.EMPTY_SYMBOL.equals(returnType.trim()))&&(!HandleConstant.MAP_SYMBOL.equals(returnType))&&(!HandleConstant.PACK_MAP_SYMBOL.equals(returnType))&&type==4){
@@ -229,7 +231,7 @@ public class ProxyHandler implements InvocationHandler {
         return sql.startsWith(HandleConstant.SELECT_SYMBOL)||sql.startsWith(HandleConstant.SELECT_SYMBOL.toUpperCase());
     }
 
-    public int type(Type t){
+    public int type(Class<?> t){
         if(t==int.class){
             return HandleConstant.TYPE_INT;
         }

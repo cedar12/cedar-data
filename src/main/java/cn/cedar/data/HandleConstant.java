@@ -1,7 +1,5 @@
 package cn.cedar.data;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 class HandleConstant {
@@ -24,10 +22,5 @@ class HandleConstant {
     protected static final int TYPE_OTHER=4;
 
     protected static Pattern ANNOTATION = Pattern.compile("\\/\\*.*?\\*\\/",Pattern.DOTALL);
-
-    public static void main(String[] args) {
-        Integer a=1;
-        System.out.println(a instanceof Number);
-    }
 
 }
