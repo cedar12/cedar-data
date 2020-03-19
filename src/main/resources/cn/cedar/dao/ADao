@@ -1,4 +1,4 @@
-/*插入数据 方法名后必需接空格*/
+/*插入数据*/
 insert:{
 insert into test(id#{a!=null?',a':''}#{b!=null?',b':''}) values(null#{a!=null?','+a:''}#{b!=null?','+b:''})
 };

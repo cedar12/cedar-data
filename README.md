@@ -10,7 +10,7 @@ public interface  ADao{
     List<Map<String, Object>> select(@Param("a") Integer a);
     Integer update(@Param("id")Integer id,@Param("a") Integer a,@Param("b") String b);
     Integer del(@Param("id")Integer id);
-    Integer count(@Param("a")Integer a,@Param("b")String b);
+    int count(@Param("a")Integer a,@Param("b")String b);
     List<TestDto> selectDto();
 }
 
@@ -36,26 +36,26 @@ sql主体（可使用#{}表达式）
 ```
 ```
 /*插入数据*/
-insert java.lang.Integer: {
+insert:{
 insert into test(id#{a!=null?',a':''}#{b!=null?',b':''}) values(null#{a!=null?','+a:''}#{b!=null?','+b:''})
 };
 /*查询数据返回map*/
-  select Map  :{
+select:{
 select * from test where 1=1 #{a!=null?'and  a='+a:''}
 };
 /*
 查询数据返回dto
 */
-  selectDto cn.cedar.dto.TestDto  :{
+selectDto cn.cedar.dto.TestDto:{
 select id,b from test
 };
-update java.lang.Integer:{
+update:{
 update test set  a=#{a} #{b!=null?' and b='+b:''}  where id=#{id}
 };
-del java.lang.Integer:{
+del:{
 delete from test where  id=#{id}
 };
-count java.lang.Integer:{
-select count(1) from test #{a!=null||b!=null?'where 1=1':''} #{a!=null?' and a='+a:''}  #{b!=null?' and b='+b:''}
+count:{
+SELECT count(1) from test #{a!=null||b!=null?'where 1=1':''} #{a!=null?' and a='+a:''}  #{b!=null?' and b like'+b:''}
 };
 ```
