@@ -65,7 +65,6 @@ public class JdbcUtil {
 		}
 	}
 	public final void commit(){
-		System.out.println(isAutoClose);
 		try {
 			connection.commit();
 			connection.setAutoCommit(false);
