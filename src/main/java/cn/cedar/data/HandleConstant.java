@@ -14,6 +14,7 @@ class HandleConstant {
     protected static final String SELECT_SYMBOL="select";
     protected static final String JS_SYMBOL="JavaScript";
     protected static final String SPLIT_SYMBOL=",";
+    protected static final String KEY_SYMBOL="KEY";
 
     protected static final int TYPE_INT=0;
     protected static final int TYPE_INTEGER=1;

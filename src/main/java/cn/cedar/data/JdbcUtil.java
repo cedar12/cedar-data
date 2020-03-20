@@ -16,7 +16,7 @@ public class JdbcUtil {
 
 	public static boolean isAutoClose=true;
 
-	private Connection connection;
+	protected Connection connection;
 
 	static {
 		register();
@@ -56,7 +56,7 @@ public class JdbcUtil {
 		}
 	}
 
-	public void setAutoCommit(boolean autoCommit){
+	public final void setAutoCommit(boolean autoCommit){
 		isAutoClose=autoCommit;
 		try {
 			getConnection().setAutoCommit(autoCommit);
@@ -64,28 +64,45 @@ public class JdbcUtil {
 			e.printStackTrace();
 		}
 	}
-	public void commit(){
-		isAutoClose=true;
+	public final void commit(){
+		System.out.println(isAutoClose);
 		try {
 			connection.commit();
+			connection.setAutoCommit(false);
 			close(connection,null,null);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	}
-	public void rollback(){
 		isAutoClose=true;
+	}
+	public final void rollback(){
+
 		try {
 			connection.rollback();
+			connection.setAutoCommit(false);
 			close(connection,null,null);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		isAutoClose=true;
+	}
+
+	public final boolean isClosed(){
+		try {
+			if(connection==null||connection.isClosed()){
+				return true;
+			}else{
+				return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 
 	public Connection getConnection() {
 		try {
-			if(connection==null||connection.isClosed()){
+			if(isClosed()){
 				connection = DriverManager.getConnection(url, user, password);
 			}
 			return connection;
@@ -159,6 +176,40 @@ public class JdbcUtil {
 				close(conn,ps,null);
 			}else{
 				close(null,ps,null);
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 * 执行DML并返回自增长id
+	 * @param sql
+	 * @param params
+	 * @return
+	 */
+	public final int excuteGetGeneratedKe(String sql,Object... params) {
+		Connection conn=getConnection();
+		PreparedStatement ps=null;
+		ResultSet rs=null;
+		try {
+			ps=conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+			for(int i=1;i<=params.length;i++) {
+				ps.setObject(i, params[i-1]);
+			}
+			int rows=ps.executeUpdate();
+			if(rows>0){
+				rs = ps.getGeneratedKeys();
+				if(rs.next()) {
+					return rs.getInt(1);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if(isAutoClose){
+				close(conn,ps,rs);
+			}else{
+				close(null,ps,rs);
 			}
 		}
 		return 0;

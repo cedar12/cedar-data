@@ -21,3 +21,10 @@ delete from test where  id=#{id}
 count:{
 SELECT count(1) from test #{a!=null||b!=null?'where 1=1':''} #{a!=null?' and a='+a:''}  #{b!=null?' and b like'+b:''}
 };
+/*
+插入数据获取自增长id
+返回参数设置为key则返回自增长id
+*/
+insertGetKey key:{
+insert into test values(null,#{a},#{b},now())
+};

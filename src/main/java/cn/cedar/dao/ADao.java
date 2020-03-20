@@ -13,4 +13,5 @@ public interface  ADao{
     Integer del(@Param("id")Integer id);
     int count(@Param("a")Integer a,@Param("b")String b);
     List<TestDto> selectDto();
+    int insertGetKey(@Param("a")Integer a,@Param("b")String b);
 }

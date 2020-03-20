@@ -189,16 +189,17 @@ public class ProxyHandler implements InvocationHandler {
         Class<?> t=method.getReturnType();
         int type=type(t);
         if(t==null||type<4){
+            String returnType=returnMap.get(method);
             if(isDQL(sql)){
                 returnObj=jdbc.excuteQueryCount(sql);
-                if(type==HandleConstant.TYPE_INT||type==HandleConstant.TYPE_INTEGER){
-                    returnObj=Integer.parseInt(returnObj.toString());
-                }
-            }else {
+                returnObj=parseReturnValue(returnObj,type);
+            }else if(returnType.equalsIgnoreCase(HandleConstant.KEY_SYMBOL)){
+                System.out.println("获取id");
+                returnObj=jdbc.excuteGetGeneratedKe(sql);
+                returnObj=parseReturnValue(returnObj,type);
+            }else{
                 returnObj = jdbc.excute(sql);
-                if(type==HandleConstant.TYPE_LONG||type==HandleConstant.TYPE_LONG_){
-                    returnObj=Long.parseLong(returnObj.toString());
-                }
+                returnObj=parseReturnValue(returnObj,type);
             }
         }else{
             List<Map<String,Object>> listMap=jdbc.excuteQuery(sql);
@@ -210,6 +211,15 @@ public class ProxyHandler implements InvocationHandler {
             }
         }
         return returnObj;
+    }
+
+    private Object parseReturnValue(Object obj,int type){
+        if(type==HandleConstant.TYPE_LONG||type==HandleConstant.TYPE_LONG_){
+            obj=Long.parseLong(obj.toString());
+        }if(type==HandleConstant.TYPE_INT||type==HandleConstant.TYPE_INTEGER){
+            obj=Integer.parseInt(obj.toString());
+        }
+        return obj;
     }
 
     public List<Object> packDto(Method method,List<Map<String,Object>> mapList){

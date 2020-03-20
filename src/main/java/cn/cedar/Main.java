@@ -40,6 +40,9 @@ public class Main {
             HandleFactory.getJdbc().rollback();
         }
 
+        // 获取插入一条数据并获取其自增长id
+        System.out.println(d.insertGetKey(10000, "自增长id"));
+
     }
 
 }

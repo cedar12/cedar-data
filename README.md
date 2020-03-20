@@ -50,7 +50,7 @@ selectDto cn.cedar.dto.TestDto:{
 select id,b from test
 };
 update:{
-update test set  a=#{a} #{b!=null?' and b='+b:''}  where id=#{id}
+update test set  a=#{a} #{b!=null?', b='+b:''}  where id=#{id}
 };
 del:{
 delete from test where  id=#{id}
