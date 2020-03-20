@@ -20,7 +20,10 @@ public class ProxyHandler implements InvocationHandler {
     public static Map<Method,String> sqlMap=new HashMap<>();
     public static Map<Method,String> returnMap=new HashMap<>();
 
-    public ProxyHandler(Class<?> cls,String path){
+    private JdbcUtil jdbc;
+
+    public ProxyHandler(Class<?> cls,String path,JdbcUtil jdbc){
+        this.jdbc=jdbc;
         URL url = ProxyHandler.class.getClassLoader().getResource("");
         File file = new File(url.getPath()+path);
         ByteBuffer buffer = ByteBuffer.allocate(1024);
@@ -153,7 +156,7 @@ public class ProxyHandler implements InvocationHandler {
             for(Map.Entry<String, String> e:entryMap){
                 Set<Map.Entry<String, Object>> entrySet = paramsMap.entrySet();
                 for (Map.Entry<String, Object> entry : entrySet) {
-                    if(entry.getValue()==null){
+                    if(entry.getValue()==null||entry instanceof Number){
                         var += "var " + entry.getKey() + "=" + entry.getValue() + ";";
                     }else {
                         var += "var " + entry.getKey() + "=\"" + entry.getValue() + "\";";
@@ -187,18 +190,18 @@ public class ProxyHandler implements InvocationHandler {
         int type=type(t);
         if(t==null||type<4){
             if(isDQL(sql)){
-                returnObj=JdbcUtil.excuteQueryCount(sql);
+                returnObj=jdbc.excuteQueryCount(sql);
                 if(type==HandleConstant.TYPE_INT||type==HandleConstant.TYPE_INTEGER){
                     returnObj=Integer.parseInt(returnObj.toString());
                 }
             }else {
-                returnObj = JdbcUtil.excute(sql);
+                returnObj = jdbc.excute(sql);
                 if(type==HandleConstant.TYPE_LONG||type==HandleConstant.TYPE_LONG_){
                     returnObj=Long.parseLong(returnObj.toString());
                 }
             }
         }else{
-            List<Map<String,Object>> listMap=JdbcUtil.excuteQuery(sql);
+            List<Map<String,Object>> listMap=jdbc.excuteQuery(sql);
             List<Object> returnList=packDto(method,JdbcUtil.formatHumpNameForList(listMap));
             if(returnList==null){
                 returnObj=listMap;

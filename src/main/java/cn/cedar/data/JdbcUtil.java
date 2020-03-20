@@ -14,10 +14,30 @@ public class JdbcUtil {
 
 	private static String driverClass = null;
 
+	public static boolean isAutoClose=true;
+
+	private Connection connection;
 
 	static {
 		register();
+	}
 
+	public static String getUrl() {
+		return url;
+	}
+
+	public static String getUser() {
+		return user;
+	}
+
+	public static String getDriverClass() {
+		return driverClass;
+	}
+
+	protected  static String getPassword(){return password;}
+
+	public void setConnection(Connection connection){
+		this.connection=connection;
 	}
 
 	private static void register(){
@@ -36,52 +56,44 @@ public class JdbcUtil {
 		}
 	}
 
-	public static Connection getConnection() {
+	public void setAutoCommit(boolean autoCommit){
+		isAutoClose=autoCommit;
 		try {
-			Connection conn = DriverManager.getConnection(url, user, password);
-			return conn;
+			getConnection().setAutoCommit(autoCommit);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public void commit(){
+		isAutoClose=true;
+		try {
+			connection.commit();
+			close(connection,null,null);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public void rollback(){
+		isAutoClose=true;
+		try {
+			connection.rollback();
+			close(connection,null,null);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Connection getConnection() {
+		try {
+			if(connection==null||connection.isClosed()){
+				connection = DriverManager.getConnection(url, user, password);
+			}
+			return connection;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
-
-
-	/**
-	 *  执行结果为多条数据的DQL
-	 * @param sql
-	 * @param params
-	 * @return
-	 */
-	public static Map<String,Map<String,Object>> excuteQueryKeyBySerachKey(String sql,Object... params) {
-		Connection conn=getConnection();
-		Map<String,Map<String,Object>> results=new HashMap<>();
-		PreparedStatement ps=null;
-		ResultSet rs=null;
-		try {
-			ps=conn.prepareStatement(sql);
-			for(int i=1;i<=params.length;i++) {
-				ps.setObject(i, params[i-1]);
-			}
-			rs=ps.executeQuery();
-			ResultSetMetaData rmd=rs.getMetaData();
-			int count=rmd.getColumnCount();
-			while (rs.next()) {
-				Map<String,Object> columnMap=new HashMap<String,Object>();
-				for(int i=1;i<=count;i++) {
-					columnMap.put(rmd.getColumnLabel(i), rs.getObject(i));
-				}
-				results.put(rs.getString("searchKey"),columnMap);
-			}
-			return results;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			close(conn,ps,rs);
-		}
-		return results;
-	}
-	
 	
 	/**
 	 * 执行结果为多条数据的DQL
@@ -89,7 +101,7 @@ public class JdbcUtil {
 	 * @param params
 	 * @return
 	 */
-	public static List<Map<String,Object>> excuteQuery(String sql,Object... params) {
+	public final List<Map<String,Object>> excuteQuery(String sql,Object... params) {
 		Connection conn=getConnection();
 		List<Map<String,Object>> results=new ArrayList<Map<String,Object>>();
 		PreparedStatement ps=null;
@@ -113,7 +125,11 @@ public class JdbcUtil {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			close(conn,ps,rs);
+			if(isAutoClose){
+				close(conn,ps,rs);
+			}else{
+				close(null,ps,rs);
+			}
 		}
 		return results;
 	}
@@ -124,7 +140,7 @@ public class JdbcUtil {
 	 * @param params
 	 * @return
 	 */
-	public static int excute(String sql,Object... params) {
+	public final int excute(String sql,Object... params) {
 		Connection conn=getConnection();
 		PreparedStatement ps=null;
 		try {
@@ -132,14 +148,18 @@ public class JdbcUtil {
 			for(int i=1;i<=params.length;i++) {
 				ps.setObject(i, params[i-1]);
 			}
-			if(sql.trim().startsWith("select")) {
+			if(sql.trim().startsWith("select")||sql.trim().startsWith("SELECT")) {
 				return ps.getGeneratedKeys().getInt(1);
 			}
 			return ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			close(conn,ps,null);
+			if(isAutoClose){
+				close(conn,ps,null);
+			}else{
+				close(null,ps,null);
+			}
 		}
 		return 0;
 	}
@@ -150,7 +170,7 @@ public class JdbcUtil {
 	 * @param params
 	 * @return
 	 */
-	public static Map<String,Object> excuteQueryOne(String sql,Object... params) {
+	public final Map<String,Object> excuteQueryOne(String sql,Object... params) {
 		Connection conn=getConnection();
 		Map<String,Object> columnMap=new HashMap<String,Object>();
 		PreparedStatement ps=null;
@@ -172,7 +192,11 @@ public class JdbcUtil {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			close(conn,ps,rs);
+			if(isAutoClose){
+				close(conn,ps,rs);
+			}else{
+				close(null,ps,rs);
+			}
 		}
 		return columnMap;
 	}
@@ -184,7 +208,7 @@ public class JdbcUtil {
 	 * @param params
 	 * @return
 	 */
-	public static long excuteQueryCount(String sql,Object... params) {
+	public final long excuteQueryCount(String sql,Object... params) {
 		Connection conn=getConnection();
 		PreparedStatement ps=null;
 		ResultSet rs=null;
@@ -200,7 +224,11 @@ public class JdbcUtil {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			close(conn,ps,rs);
+			if(isAutoClose){
+				close(conn,ps,rs);
+			}else{
+				close(null,ps,rs);
+			}
 		}
 		return new Long(0);
 	}

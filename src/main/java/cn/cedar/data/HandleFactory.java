@@ -10,6 +10,15 @@ public final  class HandleFactory<T> {
 
     private static Map<Class,Object> proxyMap=new HashMap<>();
 
+    private static JdbcUtil jdbc=new JdbcUtil();
+
+    public static void setJdbc(JdbcUtil jdbc){
+        HandleFactory.jdbc=jdbc;
+    }
+    public static JdbcUtil getJdbc(){
+        return jdbc;
+    }
+
     public HandleFactory(Class<?>... cls) {
         for (Class<?> c : cls) {
             getInstance(c);
@@ -19,11 +28,15 @@ public final  class HandleFactory<T> {
     public T getInstance(Class<?> cls){
         Object proxyObj=proxyMap.get(cls);
         if(proxyObj==null){
-            ProxyHandler proxyHandler=new ProxyHandler(cls,getMapperPath(cls));
+            ProxyHandler proxyHandler=new ProxyHandler(cls,getMapperPath(cls),jdbc);
             proxyObj= Proxy.newProxyInstance(cls.getClassLoader(),new Class[]{cls},proxyHandler);
             proxyMap.put(cls,proxyObj);
         }
         return (T) proxyObj;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(JdbcUtil.class.getEnclosingClass());
     }
 
     private static String getMapperPath(Class<?> cls){
