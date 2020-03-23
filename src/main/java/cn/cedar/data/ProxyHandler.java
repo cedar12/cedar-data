@@ -145,7 +145,7 @@ public class ProxyHandler implements InvocationHandler {
         }
         if(value == null){
             paramsMap.put(key, value);
-        }if (value instanceof String||value instanceof Character||value.getClass()==char.class) {
+        }else if (value instanceof String||value instanceof Character||value.getClass()==char.class) {
             paramsMap.put(key, String.valueOf(HandleConstant.SINGLE_SYMBOL) + value +String.valueOf(HandleConstant.SINGLE_SYMBOL));
         }else if(value instanceof Number||value.getClass()==int.class||value.getClass()==long.class){
             paramsMap.put(key, value);
