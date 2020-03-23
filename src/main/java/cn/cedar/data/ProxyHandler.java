@@ -30,25 +30,20 @@ public class ProxyHandler implements InvocationHandler {
         URL url = ProxyHandler.class.getClassLoader().getResource("");
         File file = new File(url.getPath()+path);
         ByteBuffer buffer = ByteBuffer.allocate(1024);
-        String content="";
+        String content=HandleConstant.EMPTY_SYMBOL;
         try{
-            //通过文件输入流获取文件通道流对象
             FileChannel inFc = new FileInputStream(file).getChannel();
-
-            //读取数据
             buffer.clear();
-
             int length = inFc.read(buffer);
             content=new String(buffer.array(),0,length,"UTF-8");
             inFc.close();
-
         }catch(Exception e){
             e.printStackTrace();
         }
         content = HandleConstant.ANNOTATION.matcher(content).replaceAll(HandleConstant.EMPTY_SYMBOL);
         HandleConstant.ANNOTATION = Pattern.compile("\r\n",Pattern.DOTALL);
         content = HandleConstant.ANNOTATION.matcher(content).replaceAll(HandleConstant.EMPTY_SYMBOL);
-        Method[] methods=cls.getMethods();
+        Method[] methods=cls.getDeclaredMethods();
         for(Method method:methods){
             String pattern = "\\s*?"+method.getName()+"((\\s+?(.*?)\\s*?)|\\s*?):\\s*?\\{((.*?))\\}\\s*?;";
             Pattern r = Pattern.compile(pattern,Pattern.DOTALL);
@@ -112,7 +107,7 @@ public class ProxyHandler implements InvocationHandler {
             if(args[i] instanceof Map){
                 Set<Map.Entry<String, Object>> entrySet = ((Map) args[i]).entrySet();
                 for (Map.Entry<String, Object> entry : entrySet) {
-                    handleArgs(paramsMap,entry.getKey().trim(),entry.getValue());
+                    InParams.in(paramsMap,entry.getKey().trim(),entry.getValue(),false);
                 }
             }else {
                 tmpArgs.add(args[i]);
@@ -123,85 +118,11 @@ public class ProxyHandler implements InvocationHandler {
                 Annotation anno = annos[i][j];
                 if (anno != null && anno instanceof Param) {
                     Param param = (Param) anno;
-                    if (tmpArgs.get(i)!= null && tmpArgs.get(i).getClass() == String.class) {
-                        paramsMap.put(param.value().trim(), "'" + tmpArgs.get(i) + "'");
-                    } else if (tmpArgs.get(i) != null && tmpArgs.get(i) instanceof Map) {
-                        Set<Map.Entry<String, Object>> entrySet = ((Map) tmpArgs.get(i)).entrySet();
-                        for (Map.Entry<String, Object> entry : entrySet) {
-                            handleArgs(paramsMap,param.value().trim(),entry.getValue());
-                        }
-                    } else {
-                        paramsMap.put(param.value().trim(), tmpArgs.get(i));
-                    }
+                    InParams.in(paramsMap,param.value().trim(),tmpArgs.get(i),false);
                 }
             }
         }
         return  paramsMap;
-    }
-
-    private void handleArgs(Map<String,Object> paramsMap,String key,Object value){
-        if(key==null){
-            return;
-        }
-        if(value == null){
-            paramsMap.put(key, value);
-        }else if (value instanceof String||value instanceof Character||value.getClass()==char.class) {
-            paramsMap.put(key, String.valueOf(HandleConstant.SINGLE_SYMBOL) + value +String.valueOf(HandleConstant.SINGLE_SYMBOL));
-        }else if(value instanceof Number||value.getClass()==int.class||value.getClass()==long.class){
-            paramsMap.put(key, value);
-        } else if(value instanceof String[]){
-            String[] tmps= (String[]) value;
-            String val=String.valueOf(HandleConstant.S_SYMBOL);
-            for(int i=0;i<tmps.length;i++){
-                value+=HandleConstant.SINGLE_SYMBOL+tmps[i]+HandleConstant.SINGLE_SYMBOL;
-            }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
-            paramsMap.put(key, val);
-        } else if(value instanceof Number[]){
-            Number[] tmps= (Number[]) value;
-            String val=String.valueOf(HandleConstant.S_SYMBOL);
-            for(int i=0;i<tmps.length;i++){
-                value+=String.valueOf(tmps[i]);
-                if(i<tmps.length-1){
-                    value+=",";
-                }
-            }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
-            paramsMap.put(key, val);
-        } else if(value instanceof List){
-            List tmps= (List) value;
-            String val=String.valueOf(HandleConstant.S_SYMBOL);
-            for(int i=0;i<tmps.size();i++){
-                if(value instanceof String||value instanceof Character||value.getClass()==char.class){
-                    value+=String.valueOf(tmps.get(i));
-                }else{
-                    value+=String.valueOf(HandleConstant.SINGLE_SYMBOL)+String.valueOf(tmps.get(i))+String.valueOf(HandleConstant.SINGLE_SYMBOL);
-                }
-                if(i<tmps.size()-1){
-                    value+=",";
-                }
-            }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
-            paramsMap.put(key, val);
-        }else if(value instanceof Map){
-            Map tmp= (Map) value;
-            String val=String.valueOf(HandleConstant.START_SYMBOL);
-            Set<Map.Entry> en=tmp.entrySet();
-            boolean isFirst=true;
-            for(Map.Entry e:en){
-                if(!isFirst){
-                    value+=",";
-                }
-                value+=String.valueOf(e.getKey())+e.getValue();
-                if(e.getValue()!=null&&e.getValue() instanceof String||value instanceof Character||value.getClass()==char.class){
-                    value+=String.valueOf(HandleConstant.SINGLE_SYMBOL)+e.getValue()+String.valueOf(HandleConstant.SINGLE_SYMBOL);
-                }else{
-                    value+=String.valueOf(e.getValue());
-                }
-            }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
-            paramsMap.put(key, val);
-        }
     }
 
     private String parseSql(String regSql,Map<String,Object> paramsMap){
@@ -215,10 +136,15 @@ public class ProxyHandler implements InvocationHandler {
                 String var=HandleConstant.EMPTY_SYMBOL;
                 Set<Map.Entry<String, Object>> entrySet = paramsMap.entrySet();
                 for (Map.Entry<String, Object> entry : entrySet) {
-                    if(entry.getValue()==null||entry instanceof Number){
-                        var += "var " + entry.getKey() + "=" + entry.getValue() + ";";
+                    if(InParams.isString(entry.getValue())){
+                        if(entry.getValue().toString().startsWith(HandleConstant.FLAG_SYMBOL)){
+                            String value=entry.getValue().toString().replaceAll(HandleConstant.FLAG_SYMBOL,"");
+                            var += "var " + entry.getKey() + "=" + value + ";";
+                        }else {
+                            var += "var " + entry.getKey() + "=\"" + entry.getValue() + "\";";
+                        }
                     }else {
-                        var += "var " + entry.getKey() + "=\"" + entry.getValue() + "\";";
+                        var += "var " + entry.getKey() + "=" + entry.getValue() + ";";
                     }
                 }
                 long time=System.currentTimeMillis();
@@ -341,14 +267,14 @@ public class ProxyHandler implements InvocationHandler {
     private Object eval(String reg,String var){
         String isReturnStr=reg.contains(HandleConstant.RETURN_SYMBOL)?HandleConstant.EMPTY_SYMBOL:HandleConstant.RETURN_SYMBOL;
         try {
-            engine.eval(HandleConstant.FUN_SYMBOL+HandleConstant.ONE_EMPTY_SYMBOL + HandleConstant.EVAL_NAME_SYSMBOL + "()" +HandleConstant.START_SYMBOL+var+isReturnStr+HandleConstant.ONE_EMPTY_SYMBOL+reg+HandleConstant.END_SYMBOL);
+            engine.eval(HandleConstant.FUN_SYMBOL+HandleConstant.ONE_EMPTY_SYMBOL + HandleConstant.EVAL_NAME_SYMBOL + "()" +HandleConstant.START_SYMBOL+var+isReturnStr+HandleConstant.ONE_EMPTY_SYMBOL+reg+HandleConstant.END_SYMBOL);
         } catch (ScriptException e) {
             e.printStackTrace();
         }
         Invocable invocable = (Invocable) engine;
         Object o = null;
         try {
-            o = invocable.invokeFunction(HandleConstant.EVAL_NAME_SYSMBOL);
+            o = invocable.invokeFunction(HandleConstant.EVAL_NAME_SYMBOL);
         } catch (ScriptException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {

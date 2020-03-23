@@ -21,11 +21,13 @@ class HandleConstant {
     protected static final String SELECT_SYMBOL="select";
     protected static final String JS_SYMBOL="JavaScript";
     protected static final String SPLIT_SYMBOL=",";
+    protected static final String COLON_SYMBOL=":";
     protected static final String KEY_SYMBOL="KEY";
     protected static final String RETURN_SYMBOL="return";
     protected static final String ONE_EMPTY_SYMBOL=" ";
     protected static final String FUN_SYMBOL="function";
-    protected static final String EVAL_NAME_SYSMBOL="parse_express";
+    protected static final String EVAL_NAME_SYMBOL="parse_express";
+    protected static final String FLAG_SYMBOL="!S ";
 
 
     protected static final int TYPE_INT=0;

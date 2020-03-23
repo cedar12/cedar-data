@@ -34,3 +34,6 @@ SELECT count(1) from test #[a!=null||b!=null?'where 1=1':''] #[a!=null?' and a='
 insertGetKey key:{
 insert into test values(null,#[a],#[b],now())
 };
+insertGetKey2 key:{
+insert into test values(null,#[o.a],#[o.b],now())
+};

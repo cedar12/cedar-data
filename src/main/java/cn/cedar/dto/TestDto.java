@@ -1,10 +1,6 @@
 package cn.cedar.dto;
 
 
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import java.util.Date;
 
 public class TestDto {
@@ -13,6 +9,14 @@ public class TestDto {
     private Integer a;
     private String b;
     private Date c;
+
+    public TestDto(){}
+    public TestDto(Integer id, Integer a, String b, Date c) {
+        this.id = id;
+        this.a = a;
+        this.b = b;
+        this.c = c;
+    }
 
     public Integer getId() {
         return id;
