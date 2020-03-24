@@ -46,18 +46,18 @@ public class Main{
 文件内容格式
 ```
 方法名 返回实体类(可选):{
-sql主体（可使用#{}表达式）
+sql主体（可使用#[]表达式输出值）
 };
 ```
 新建ADao.java同级目录文件ADao
 ```
 /*插入数据*/
 insert:{
-insert into test(id#{a!=null?',a':''}#{b!=null?',b':''}) values(null#{a!=null?','+a:''}#{b!=null?','+b:''})
+insert into test(id#[a!=null?',a':'']#[b!=null?',b':'']) values(null#[a!=null?','+a:'']#[b!=null?','+b:''])
 };
 /*查询数据返回map*/
 select:{
-select * from test where 1=1 #{a!=null?'and  a='+a:''}
+select * from test where 1=1 #[a!=null?'and  a='+a:'']
 };
 /*
 查询数据返回dto
@@ -66,12 +66,12 @@ selectDto cn.cedar.dto.TestDto:{
 select id,b from test
 };
 update:{
-update test set  a=#{a} #{b!=null?', b='+b:''}  where id=#{id}
+update test set  a=#[a] #[b!=null?', b='+b:'']  where id=#[id]
 };
 del:{
-delete from test where  id=#{id}
+delete from test where  id=#[id]
 };
 count:{
-SELECT count(1) from test #{a!=null||b!=null?'where 1=1':''} #{a!=null?' and a='+a:''}  #{b!=null?' and b like'+b:''}
+SELECT count(1) from test #[a!=null||b!=null?'where 1=1':''] #[a!=null?' and a='+a:'']  #[b!=null?' and b like'+b:'']
 };
 ```
