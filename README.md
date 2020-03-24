@@ -4,7 +4,7 @@
 
 # 使用
 Maven项目
-> 依赖可在https://search.maven.org/artifact/com.github.cedar12/cedar-data/1.0.1/jar中搜索到
+> 依赖可在https://search.maven.org/artifact/com.github.cedar12/cedar-data/1.0.1/jar 中搜索到
 ```xml
 <dependency>
   <groupId>com.github.cedar12</groupId>
