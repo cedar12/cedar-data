@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
 
-public class JdbcUtil {
+public class JdbcManager {
 
 	private static String url = null;
 
@@ -40,10 +40,13 @@ public class JdbcUtil {
 		this.connection=connection;
 	}
 
+	/**
+	 * 注册驱动
+	 */
 	private static void register(){
 		try {
 			Properties prop = new Properties();
-			Class clazz = JdbcUtil.class;
+			Class clazz = JdbcManager.class;
 			InputStream in = clazz.getResourceAsStream("/jdbc.properties");
 			prop.load(in);
 			url = prop.getProperty("url");
@@ -56,6 +59,10 @@ public class JdbcUtil {
 		}
 	}
 
+	/**
+	 * 设置事务是否开启
+	 * @param autoCommit
+	 */
 	public final void setAutoCommit(boolean autoCommit){
 		isAutoClose=autoCommit;
 		try {
@@ -64,6 +71,10 @@ public class JdbcUtil {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * 事务提交
+	 */
 	public final void commit(){
 		try {
 			connection.commit();
@@ -74,6 +85,10 @@ public class JdbcUtil {
 		}
 		isAutoClose=true;
 	}
+
+	/**
+	 * 事务回滚
+	 */
 	public final void rollback(){
 
 		try {
@@ -86,6 +101,10 @@ public class JdbcUtil {
 		isAutoClose=true;
 	}
 
+	/**
+	 * 连接是否关闭
+	 * @return
+	 */
 	public final boolean isClosed(){
 		try {
 			if(connection==null||connection.isClosed()){
@@ -99,6 +118,10 @@ public class JdbcUtil {
 		return true;
 	}
 
+	/**
+	 * 获取连接
+	 * @return
+	 */
 	public Connection getConnection() {
 		try {
 			if(isClosed()){
@@ -282,10 +305,12 @@ public class JdbcUtil {
 		}
 		return new Long(0);
 	}
-	
-	
+
 	/**
 	 * 关闭流
+	 * @param conn
+	 * @param ps
+	 * @param rs
 	 */
 	public static void close(Connection conn,PreparedStatement ps,ResultSet rs) {
 		if(rs!=null) {
@@ -358,7 +383,7 @@ public class JdbcUtil {
 	  /**
 	   * 将List中map的key值命名方式格式化为驼峰
 	   *
-	   * @param
+	   * @param list
 	   * @return
 	   */
 	  public static List<Map<String, Object>> formatHumpNameForList(List<Map<String, Object>> list) {

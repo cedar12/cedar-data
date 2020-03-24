@@ -5,26 +5,37 @@ import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * @author 413338772@qq.com
+ */
 public final  class HandleFactory<T> {
 
     private static Map<Class,Object> proxyMap=new HashMap<>();
 
-    private static JdbcUtil jdbc=new JdbcUtil();
+    private static JdbcManager jdbc=new JdbcManager();
 
-    public static void setJdbc(JdbcUtil jdbc){
+    public static void setJdbc(JdbcManager jdbc){
         HandleFactory.jdbc=jdbc;
     }
-    public static JdbcUtil getJdbc(){
+    public static JdbcManager getJdbc(){
         return jdbc;
     }
 
+    /**
+     *
+     * @param cls
+     */
     public HandleFactory(Class<?>... cls) {
         for (Class<?> c : cls) {
             getInstance(c);
         }
     }
 
+    /**
+     * 获取接口实例
+     * @param cls
+     * @return
+     */
     public T getInstance(Class<?> cls){
         Object proxyObj=proxyMap.get(cls);
         if(proxyObj==null){
@@ -35,10 +46,11 @@ public final  class HandleFactory<T> {
         return (T) proxyObj;
     }
 
-    public static void main(String[] args) {
-        System.out.println(JdbcUtil.class.getEnclosingClass());
-    }
-
+    /**
+     *
+     * @param cls
+     * @return
+     */
     private static String getMapperPath(Class<?> cls){
         String[] paths=cls.getName().split("\\.");
         String path="";

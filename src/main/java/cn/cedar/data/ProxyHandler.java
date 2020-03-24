@@ -2,7 +2,6 @@ package cn.cedar.data;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,15 +16,24 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @author 413338772@qq.com
+ */
 public class ProxyHandler implements InvocationHandler {
 
     private static Map<Method,String> sqlMap=new HashMap<>();
     private static Map<Method,String> returnMap=new HashMap<>();
     private static ScriptEngine engine = HandleConstant.MANAGER.getEngineByName(HandleConstant.JS_SYMBOL);
 
-    private JdbcUtil jdbc;
+    private JdbcManager jdbc;
 
-    protected ProxyHandler(Class<?> cls,String path,JdbcUtil jdbc){
+    /**
+     *
+     * @param cls
+     * @param path
+     * @param jdbc
+     */
+    protected ProxyHandler(Class<?> cls, String path, JdbcManager jdbc){
         this.jdbc=jdbc;
         URL url = ProxyHandler.class.getClassLoader().getResource("");
         File file = new File(url.getPath()+path);
@@ -62,6 +70,14 @@ public class ProxyHandler implements InvocationHandler {
         }
     }
 
+    /**
+     *
+     * @param proxy
+     * @param method
+     * @param args
+     * @return
+     * @throws Throwable
+     */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if(Object.class.equals(method.getDeclaringClass())){
@@ -73,6 +89,11 @@ public class ProxyHandler implements InvocationHandler {
         return null;
     }
 
+    /**
+     *
+     * @param msg
+     * @return
+     */
     private static List<Map<String,String>> extractMessage(String msg) {
         List<Map<String,String>> list = new ArrayList<>();
         int start = 0;
@@ -96,6 +117,12 @@ public class ProxyHandler implements InvocationHandler {
         return list;
     }
 
+    /**
+     *
+     * @param method
+     * @param args
+     * @return
+     */
     private Map<String, Object> args(Method method,Object[] args){
         Map<String,Object> paramsMap=new HashMap<>();
         if(args==null){
@@ -125,6 +152,12 @@ public class ProxyHandler implements InvocationHandler {
         return  paramsMap;
     }
 
+    /**
+     *
+     * @param regSql
+     * @param paramsMap
+     * @return
+     */
     private String parseSql(String regSql,Map<String,Object> paramsMap){
 
         List<Map<String, String>> reg=extractMessage(regSql);
@@ -158,9 +191,16 @@ public class ProxyHandler implements InvocationHandler {
         return sql;
     }
 
+    /**
+     *
+     * @param method
+     * @param args
+     * @return
+     */
     private Object impl(Method method,Object[] args){
         String regSql=sqlMap.get(method);
         if(regSql==null){
+            System.out.println(String.format("%s not match", method));
             return null;
         }
         Map<String,Object> paramsMap=args(method,args);
@@ -168,6 +208,12 @@ public class ProxyHandler implements InvocationHandler {
         return exec(sql,method);
     }
 
+    /**
+     *
+     * @param sql
+     * @param method
+     * @return
+     */
     private Object exec(String sql,Method method){
         sql=sql.trim();
         System.out.println(String.format("sql[%s]", sql));
@@ -187,17 +233,39 @@ public class ProxyHandler implements InvocationHandler {
                 returnObj=parseReturnValue(returnObj,type);
             }
         }else{
-            List<Map<String,Object>> listMap=jdbc.excuteQuery(sql);
-            List<Object> returnList=packDto(method,JdbcUtil.formatHumpNameForList(listMap));
-            if(returnList==null){
-                returnObj=listMap;
-            }else{
-                returnObj=returnList;
+            String returnType=returnMap.get(method);
+            Class<?> singleCls=null;
+            try {
+                Class<?> singleClsTmp=Class.forName(returnType);
+                if(singleClsTmp!=null&&singleClsTmp==t){
+                    singleCls=singleClsTmp;
+                }
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            if(singleCls!=null){
+                Map<String,Object> map=jdbc.excuteQueryOne(sql);
+                map= JdbcManager.formatHumpName(map);
+                returnObj=packSingleDto(singleCls,map);
+            }else {
+                List<Map<String, Object>> listMap = jdbc.excuteQuery(sql);
+                List<Object> returnList = packDto(method, JdbcManager.formatHumpNameForList(listMap));
+                if (returnList == null) {
+                    returnObj = listMap;
+                } else {
+                    returnObj = returnList;
+                }
             }
         }
         return returnObj;
     }
 
+    /**
+     *
+     * @param obj
+     * @param type
+     * @return
+     */
     private Object parseReturnValue(Object obj,int type){
         if(type==HandleConstant.TYPE_LONG||type==HandleConstant.TYPE_LONG_){
             obj=Long.parseLong(obj.toString());
@@ -207,6 +275,49 @@ public class ProxyHandler implements InvocationHandler {
         return obj;
     }
 
+    /**
+     * 封装对象
+     * @param cls
+     * @param map
+     * @return
+     */
+    private Object packSingleDto(Class<?> cls,Map<String,Object> map){
+        Object obj= null;
+        try {
+            obj = cls.newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        if(obj!=null){
+            Set<Map.Entry<String,Object>> entrySet=map.entrySet();
+            for(Map.Entry<String,Object> entry:entrySet){
+                Field f= null;
+                try {
+                    f = cls.getDeclaredField(entry.getKey());
+                    if(f!=null){
+                        f.setAccessible(true);
+                        f.set(obj,entry.getValue());
+                        f.setAccessible(false);
+                    }
+                } catch (NoSuchFieldException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+        return obj;
+    }
+
+    /**
+     * 封装bean
+     * @param method
+     * @param mapList
+     * @return
+     */
     private List<Object> packDto(Method method,List<Map<String,Object>> mapList){
         Class<?> t=method.getReturnType();
         String returnType=returnMap.get(method);
@@ -216,27 +327,11 @@ public class ProxyHandler implements InvocationHandler {
             try {
                 Class<?> cls=Class.forName(returnType);
                 for(int i=0;i<mapList.size();i++){
-                    Object obj=cls.newInstance();
                     Map<String,Object> map=mapList.get(i);
-                    Set<Map.Entry<String,Object>> entrySet=map.entrySet();
-                    for(Map.Entry<String,Object> entry:entrySet){
-                        Field f=cls.getDeclaredField(entry.getKey());
-                        if(f!=null){
-                            f.setAccessible(true);
-                            f.set(obj,entry.getValue());
-                            f.setAccessible(false);
-                        }
-                    }
-                    list.add(obj);
+                    list.add(packSingleDto(cls,map));
                 }
                 return list;
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (NoSuchFieldException e) {
                 e.printStackTrace();
             }
         }

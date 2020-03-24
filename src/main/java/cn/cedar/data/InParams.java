@@ -1,110 +1,232 @@
 package cn.cedar.data;
 
-import cn.cedar.dto.TestDto;
-
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+/**
+ * @author 413338772@qq.com
+ */
 public class InParams {
-    
+
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isByte(Object o){
         return o!=null&&(o instanceof Byte||o.getClass()==byte.class);
     }
 
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isShort(Object o){
         return o!=null&&(o instanceof Short||o.getClass()==short.class);
     }
 
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isInt(Object o){
         return o!=null&&(o instanceof Integer||o.getClass()==int.class);
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isLong(Object o){
         return o!=null&&(o instanceof Long||o.getClass()==long.class);
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isFloat(Object o){
         return o!=null&&(o instanceof Float||o.getClass()==float.class);
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isDouble(Object o){
         return o!=null&&(o instanceof Double||o.getClass()==double.class);
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isChar(Object o){
         return o!=null&&(o instanceof Character||o.getClass()==char.class);
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isString(Object o){
         return o!=null&&o instanceof String;
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isByteArray(Object o){
         return o!=null&o.getClass()==byte[].class;
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isLByteArray(Object o){
         return o!=null&&o instanceof Byte[];
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isShortArray(Object o){
         return o!=null&&o.getClass()==short[].class;
     }
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isLShortArray(Object o){
         return o!=null&&o instanceof Short[];
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isIntArray(Object o){
         return o!=null&&o.getClass()==int[].class;
     }
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isLIntArray(Object o){
         return o!=null&&o instanceof Integer[];
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isLongArray(Object o){
         return o!=null&&o.getClass()==long[].class;
     }
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isLLongArray(Object o){
         return o!=null&&o instanceof Long[];
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isFloatArray(Object o){
         return o!=null&&o.getClass()==float[].class;
     }
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isLFloatArray(Object o){
         return o!=null&&o instanceof Float[];
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isDoubleArray(Object o){
         return o!=null&&o.getClass()==double[].class;
     }
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isLDoubleArray(Object o){
         return o!=null&&o instanceof Double[];
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isCharArray(Object o){
         return o!=null&&o.getClass()==char[].class;
     }
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isLCharArray(Object o){
         return o!=null&&o instanceof Character[];
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isStringArray(Object o){
         return o!=null&&o instanceof String[];
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isList(Object o){
         return o!=null&&o instanceof List;
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isMap(Object o){
         return o!=null&&o instanceof Map;
     }
-
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isNull(Object o){
         return o==null;
     }
 
+    /**
+     *
+     * @param tmps
+     * @return
+     */
     private static String stringPut(String[] tmps){
         String val=String.valueOf(HandleConstant.S_SYMBOL);
         for(int i=0;i<tmps.length;i++){
@@ -121,6 +243,11 @@ public class InParams {
         return val;
     }
 
+    /**
+     *
+     * @param tmps
+     * @return
+     */
     private static String charPut(char[] tmps){
         String val=String.valueOf(HandleConstant.S_SYMBOL);
         for(int i=0;i<tmps.length;i++){
@@ -133,7 +260,13 @@ public class InParams {
         return val;
     }
 
-
+    /**
+     *
+     * @param paramsMap
+     * @param key
+     * @param value
+     * @param preIs
+     */
     protected static void in(Map<String,Object> paramsMap, String key, Object value,boolean preIs){
         if(isNull(key)){
             return;

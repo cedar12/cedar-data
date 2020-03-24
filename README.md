@@ -3,7 +3,22 @@
 
 
 # 使用
-现有类
+Maven项目
+> 依赖可在https://search.maven.org/artifact/com.github.cedar12/cedar-data/1.0.1/jar中搜索到
+```xml
+<dependency>
+  <groupId>com.github.cedar12</groupId>
+  <artifactId>cedar-data</artifactId>
+  <!-- 推荐使用最新 -->
+  <version>1.0.2</version>
+</dependency>
+```
+非Maven项目
+下载target/cedar-data-版本号.jar文件引入你的项目
+
+如何使用
+
+新建ADao.java
 ```java
 public interface  ADao{
     Integer insert(@Param("a") Integer a, @Param("b")String b);
@@ -15,6 +30,7 @@ public interface  ADao{
 }
 
 ```
+新建Main.java
 ```java
 public class Main{
     public static void main(String[] args){
@@ -34,6 +50,7 @@ public class Main{
 sql主体（可使用#{}表达式）
 };
 ```
+新建ADao.java同级目录文件ADao
 ```
 /*插入数据*/
 insert:{

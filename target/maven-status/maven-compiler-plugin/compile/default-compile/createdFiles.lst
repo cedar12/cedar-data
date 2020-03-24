@@ -1,0 +1,6 @@
+cn\cedar\data\JdbcManager.class
+cn\cedar\data\ProxyHandler.class
+cn\cedar\data\InParams.class
+cn\cedar\data\Param.class
+cn\cedar\data\HandleConstant.class
+cn\cedar\data\HandleFactory.class
