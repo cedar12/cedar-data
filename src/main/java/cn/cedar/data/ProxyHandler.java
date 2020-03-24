@@ -1,5 +1,7 @@
 package cn.cedar.data;
 
+import cn.cedar.data.expcetion.NoMatchMethodException;
+
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
@@ -85,7 +87,6 @@ public class ProxyHandler implements InvocationHandler {
         }else{
             return impl(method,args);
         }
-
         return null;
     }
 
@@ -197,11 +198,10 @@ public class ProxyHandler implements InvocationHandler {
      * @param args
      * @return
      */
-    private Object impl(Method method,Object[] args){
+    private Object impl(Method method,Object[] args) throws NoMatchMethodException {
         String regSql=sqlMap.get(method);
         if(regSql==null){
-            System.out.println(String.format("%s not match", method));
-            return null;
+            throw new NoMatchMethodException(method);
         }
         Map<String,Object> paramsMap=args(method,args);
         String sql=parseSql(regSql,paramsMap);

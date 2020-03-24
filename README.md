@@ -9,7 +9,7 @@ Maven项目
   <groupId>com.github.cedar12</groupId>
   <artifactId>cedar-data</artifactId>
   <!-- 推荐使用最新 -->
-  <version>1.0.2</version>
+  <version>版本号</version>
 </dependency>
 ```
 非Maven项目
@@ -41,14 +41,28 @@ public class Main{
     }
 }
 ```
-动态sql文件
->注：动态sql文件所在位置需要和类文件位置对应
+
+方法sql文件
+
 文件内容格式
 ```
-方法名 返回实体类(可选):{
+/*这是注释，不会被解析*/
+方法名 返回类型(可选):{
 sql主体（可使用#[]表达式输出值）
 };
 ```
+注意：
+
+1.文件名及路径必需对应类
+
+2.方法名需对象类中的方法
+
+3.实体类返回类型必需全类名
+
+4.一个方法sql必需已;符号结尾
+
+
+
 新建ADao.java同级目录文件ADao
 ```
 /*插入数据*/

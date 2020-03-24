@@ -4,6 +4,10 @@ import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
 
+
+/**
+ * @author 413338772@qq.com
+ */
 public class JdbcManager {
 
 	private static String url = null;
