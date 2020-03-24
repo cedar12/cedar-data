@@ -1,10 +1,9 @@
 # cedar-data
-使用反射、动态代理实现mybatis部分类似功能
-
+持久层工具
 
 # 使用
 Maven项目
-> 依赖可在https://search.maven.org/artifact/com.github.cedar12/cedar-data/1.0.1/jar 中搜索到
+> 依赖可在https://search.maven.org/artifact/com.github.cedar12/cedar-data/ 中搜索到
 ```xml
 <dependency>
   <groupId>com.github.cedar12</groupId>

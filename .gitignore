@@ -1,4 +1,5 @@
 !target/*.jar
+target/
 target/*.html
 target/*.pom
 target/*.asc
