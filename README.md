@@ -1,12 +1,13 @@
 # cedar-data
 简单易用持久层框架（基于jdbc）
 
-![issues](https://img.shields.io/github/issues/cedar12/cedar-data)
-![jdk](https://img.shields.io/badge/jdk-1.7%2B-brightgreen)
-![forks](https://img.shields.io/github/forks/cedar12/cedar-data)
-![stars](https://img.shields.io/github/stars/cedar12/cedar-data)
-![license](https://img.shields.io/github/license/cedar12/cedar-data)
-![maven](https://img.shields.io/badge/maven-Cedar%20Data-green)
+![issues](https://img.shields.io/github/issues/cedar12/cedar-data.svg)
+![jdk](https://img.shields.io/badge/jdk-1.7%2B-brightgreen.svg)
+![forks](https://img.shields.io/github/forks/cedar12/cedar-data.svg)
+![stars](https://img.shields.io/github/stars/cedar12/cedar-data.svg)
+![license](https://img.shields.io/github/license/cedar12/cedar-data.svg)
+![maven](https://img.shields.io/badge/maven-Cedar%20Data-green.svg)
+![maven](https://img.shields.io/badge/language-java-green.svg)
 
 
 # 使用
