@@ -33,10 +33,19 @@ public interface  ADao{
 ```java
 public class Main{
     public static void main(String[] args){
+        /*
+        1.1.x+ 版本 的实例获取
+        */
+        ADao d=InstanceFactory.getInstance(ADao.class);
+
+        /*
+        1.0.x 版本 的实例获取
+        */
         // 实例工厂
         HandleFactory factory=new HandleFactory();
         // 获取ADao的实例
         ADao d= (ADao) factory.getInstance(ADao.class);
+
         d.insert(1,'张三');
     }
 }
