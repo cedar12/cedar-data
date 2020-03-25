@@ -61,7 +61,9 @@ public class HandlerConstant {
 
     protected static JdbcManager jdbc=new JdbcManager();
 
-    public static void setJdbc(JdbcManager jdbc){
+    protected static boolean isExtended=false;
+    public static void setJdbcManager(JdbcManager jdbc){
+        isExtended=true;
         HandlerConstant.jdbc=jdbc;
     }
 

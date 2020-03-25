@@ -59,7 +59,6 @@ public class JdbcManager {
 			driverClass = prop.getProperty("driverClass");
 			Class.forName(driverClass.trim());
 		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
