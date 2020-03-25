@@ -1,7 +1,7 @@
 # cedar-data
 简单易用持久层框架（基于jdbc）
 
-![issuee](https://img.shields.io/github/issues/cedar12/cedar-data)
+![issues](https://img.shields.io/github/issues/cedar12/cedar-data)
 ![jdk](https://img.shields.io/badge/jdk-1.7%2B-brightgreen)
 ![forks](https://img.shields.io/github/forks/cedar12/cedar-data)
 ![stars](https://img.shields.io/github/stars/cedar12/cedar-data)
