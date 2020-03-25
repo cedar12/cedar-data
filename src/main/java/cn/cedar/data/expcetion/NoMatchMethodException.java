@@ -7,6 +7,6 @@ import java.lang.reflect.Method;
  */
 public class NoMatchMethodException extends Exception {
     public NoMatchMethodException(Method method) {
-        super("not match method \n%s\n"+method);
+        super(String.format("not match method \n%s\n",method));
     }
 }

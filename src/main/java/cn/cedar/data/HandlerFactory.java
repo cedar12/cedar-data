@@ -6,26 +6,34 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * @see cn.cedar.data.InstanceFactory
  * @author 413338772@qq.com
  */
-public final  class HandleFactory<T> {
+public final class HandlerFactory<T> {
 
     private static Map<Class,Object> proxyMap=new HashMap<>();
 
     private static JdbcManager jdbc=new JdbcManager();
 
     public static void setJdbc(JdbcManager jdbc){
-        HandleFactory.jdbc=jdbc;
+        HandlerFactory.jdbc=jdbc;
     }
     public static JdbcManager getJdbc(){
         return jdbc;
     }
 
     /**
-     *
+     *@see cn.cedar.data.InstanceFactory
+     */
+    @Deprecated
+    public HandlerFactory(){}
+
+    /**
+     *@see cn.cedar.data.InstanceFactory
      * @param cls
      */
-    public HandleFactory(Class<?>... cls) {
+    @Deprecated
+    public HandlerFactory(Class<?>... cls) {
         for (Class<?> c : cls) {
             getInstance(c);
         }
@@ -36,6 +44,7 @@ public final  class HandleFactory<T> {
      * @param cls
      * @return
      */
+    @Deprecated
     public T getInstance(Class<?> cls){
         Object proxyObj=proxyMap.get(cls);
         if(proxyObj==null){

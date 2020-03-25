@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * @author 413338772@qq.com
  */
-public class InParams {
+public class InParams extends HandlerConstant{
 
     /**
      *
@@ -18,6 +18,15 @@ public class InParams {
      */
     public static boolean isByte(Object o){
         return o!=null&&(o instanceof Byte||o.getClass()==byte.class);
+    }
+
+    /**
+     *
+     * @param o
+     * @return
+     */
+    public static boolean isByte(Class<?> o){
+        return o!=null&&(o==Byte.class||o==byte.class);
     }
 
     /**
@@ -34,8 +43,26 @@ public class InParams {
      * @param o
      * @return
      */
+    public static boolean isShort(Class<?> o){
+        return o!=null&&(o==Short.class||o==short.class);
+    }
+
+    /**
+     *
+     * @param o
+     * @return
+     */
     public static boolean isInt(Object o){
         return o!=null&&(o instanceof Integer||o.getClass()==int.class);
+    }
+
+    /**
+     *
+     * @param o
+     * @return
+     */
+    public static boolean isInt(Class<?> o){
+        return o!=null&&(o==Integer.class||o==int.class);
     }
     /**
      *
@@ -45,6 +72,15 @@ public class InParams {
     public static boolean isLong(Object o){
         return o!=null&&(o instanceof Long||o.getClass()==long.class);
     }
+
+    /**
+     *
+     * @param o
+     * @return
+     */
+    public static boolean isLong(Class<?> o){
+        return o!=null&&(o==Long.class||o==long.class);
+    }
     /**
      *
      * @param o
@@ -53,6 +89,15 @@ public class InParams {
     public static boolean isFloat(Object o){
         return o!=null&&(o instanceof Float||o.getClass()==float.class);
     }
+
+    /**
+     *
+     * @param o
+     * @return
+     */
+    public static boolean isFloat(Class<?> o){
+        return o!=null&&(o == Float.class||o==float.class);
+    }
     /**
      *
      * @param o
@@ -60,6 +105,15 @@ public class InParams {
      */
     public static boolean isDouble(Object o){
         return o!=null&&(o instanceof Double||o.getClass()==double.class);
+    }
+
+    /**
+     *
+     * @param o
+     * @return
+     */
+    public static boolean isDouble(Class<?> o){
+        return o!=null&&(o== Double.class||o==double.class);
     }
     /**
      *
@@ -205,6 +259,9 @@ public class InParams {
     public static boolean isList(Object o){
         return o!=null&&o instanceof List;
     }
+    public static boolean isList(Class<?> o){
+        return o!=null&&o== List.class;
+    }
     /**
      *
      * @param o
@@ -212,6 +269,9 @@ public class InParams {
      */
     public static boolean isMap(Object o){
         return o!=null&&o instanceof Map;
+    }
+    public static boolean isMap(Class<?> o){
+        return o!=null&&o== Map.class;
     }
     /**
      *
@@ -228,18 +288,18 @@ public class InParams {
      * @return
      */
     private static String stringPut(String[] tmps){
-        String val=String.valueOf(HandleConstant.S_SYMBOL);
+        String val=String.valueOf(HandlerConstant.S_SYMBOL);
         for(int i=0;i<tmps.length;i++){
             if(tmps[i]==null){
                 val+=tmps[i];
             }else {
-                val += HandleConstant.SINGLE_SYMBOL + tmps[i] + HandleConstant.SINGLE_SYMBOL;
+                val += HandlerConstant.SINGLE_SYMBOL + tmps[i] + HandlerConstant.SINGLE_SYMBOL;
             }
             if(i<tmps.length-1){
-                val+=HandleConstant.SPLIT_SYMBOL;
+                val+= HandlerConstant.SPLIT_SYMBOL;
             }
         }
-        val+=String.valueOf(HandleConstant.E_SYMBOL);
+        val+=String.valueOf(HandlerConstant.E_SYMBOL);
         return val;
     }
 
@@ -249,14 +309,14 @@ public class InParams {
      * @return
      */
     private static String charPut(char[] tmps){
-        String val=String.valueOf(HandleConstant.S_SYMBOL);
+        String val=String.valueOf(HandlerConstant.S_SYMBOL);
         for(int i=0;i<tmps.length;i++){
-            val+=HandleConstant.SINGLE_SYMBOL+((char)tmps[i])+HandleConstant.SINGLE_SYMBOL;
+            val+= HandlerConstant.SINGLE_SYMBOL+((char)tmps[i])+ HandlerConstant.SINGLE_SYMBOL;
             if(i<tmps.length-1){
-                val+=HandleConstant.SPLIT_SYMBOL;
+                val+= HandlerConstant.SPLIT_SYMBOL;
             }
         }
-        val+=String.valueOf(HandleConstant.E_SYMBOL);
+        val+=String.valueOf(HandlerConstant.E_SYMBOL);
         return val;
     }
 
@@ -275,9 +335,9 @@ public class InParams {
             paramsMap.put(key, value);
         }else if (isString(value)||isChar(value)) {
             if(preIs){
-                paramsMap.put(key, "\""+String.valueOf(HandleConstant.SINGLE_SYMBOL) + value +String.valueOf(HandleConstant.SINGLE_SYMBOL)+"\"");
+                paramsMap.put(key, "\""+String.valueOf(HandlerConstant.SINGLE_SYMBOL) + value +String.valueOf(HandlerConstant.SINGLE_SYMBOL)+"\"");
             }else {
-                paramsMap.put(key, String.valueOf(HandleConstant.SINGLE_SYMBOL) + value + String.valueOf(HandleConstant.SINGLE_SYMBOL));
+                paramsMap.put(key, String.valueOf(HandlerConstant.SINGLE_SYMBOL) + value + String.valueOf(HandlerConstant.SINGLE_SYMBOL));
             }
         }else if(isByte(value)||isShort(value)||isInt(value)||isLong(value)||isFloat(value)||isDouble(value)){
             paramsMap.put(key, value);
@@ -289,180 +349,180 @@ public class InParams {
             paramsMap.put(key, charPut(tmps));
         }else if(isLCharArray(value)){
             Character[] tmps= (Character[]) value;
-            String val=String.valueOf(HandleConstant.S_SYMBOL);
+            String val=String.valueOf(HandlerConstant.S_SYMBOL);
             for(int i=0;i<tmps.length;i++){
-                val+=HandleConstant.SINGLE_SYMBOL+tmps[i]+HandleConstant.SINGLE_SYMBOL;
+                val+= HandlerConstant.SINGLE_SYMBOL+tmps[i]+ HandlerConstant.SINGLE_SYMBOL;
             }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
+            val+=String.valueOf(HandlerConstant.E_SYMBOL);
             paramsMap.put(key, val);
         }else if(isByteArray(value)){
             byte[] tmps= (byte[]) value;
-            String val=String.valueOf(HandleConstant.S_SYMBOL);
+            String val=String.valueOf(HandlerConstant.S_SYMBOL);
             for(int i=0;i<tmps.length;i++){
                 val+=String.valueOf(tmps[i]);
                 if(i<tmps.length-1){
-                    val+=HandleConstant.SPLIT_SYMBOL;
+                    val+= HandlerConstant.SPLIT_SYMBOL;
                 }
             }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
+            val+=String.valueOf(HandlerConstant.E_SYMBOL);
             paramsMap.put(key, val);
         }else if(isLByteArray(value)){
             Byte[] tmps= (Byte[]) value;
-            String val=String.valueOf(HandleConstant.S_SYMBOL);
+            String val=String.valueOf(HandlerConstant.S_SYMBOL);
             for(int i=0;i<tmps.length;i++){
                 val+=String.valueOf(tmps[i]);
                 if(i<tmps.length-1){
-                    val+=HandleConstant.SPLIT_SYMBOL;
+                    val+= HandlerConstant.SPLIT_SYMBOL;
                 }
             }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
+            val+=String.valueOf(HandlerConstant.E_SYMBOL);
             paramsMap.put(key, val);
         }else if(isShortArray(value)){
             short[] tmps= (short[]) value;
-            String val=String.valueOf(HandleConstant.S_SYMBOL);
+            String val=String.valueOf(HandlerConstant.S_SYMBOL);
             for(int i=0;i<tmps.length;i++){
                 val+=String.valueOf(tmps[i]);
                 if(i<tmps.length-1){
-                    val+=HandleConstant.SPLIT_SYMBOL;
+                    val+= HandlerConstant.SPLIT_SYMBOL;
                 }
             }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
+            val+=String.valueOf(HandlerConstant.E_SYMBOL);
             paramsMap.put(key, val);
         }else if(isLShortArray(value)){
             Short[] tmps= (Short[]) value;
-            String val=String.valueOf(HandleConstant.S_SYMBOL);
+            String val=String.valueOf(HandlerConstant.S_SYMBOL);
             for(int i=0;i<tmps.length;i++){
                 val+=String.valueOf(tmps[i]);
                 if(i<tmps.length-1){
-                    val+=HandleConstant.SPLIT_SYMBOL;
+                    val+= HandlerConstant.SPLIT_SYMBOL;
                 }
             }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
+            val+=String.valueOf(HandlerConstant.E_SYMBOL);
             paramsMap.put(key, val);
         }else if(isIntArray(value)){
             int[] tmps= (int[]) value;
-            String val=String.valueOf(HandleConstant.S_SYMBOL);
+            String val=String.valueOf(HandlerConstant.S_SYMBOL);
             for(int i=0;i<tmps.length;i++){
                 val+=String.valueOf(tmps[i]);
                 if(i<tmps.length-1){
-                    val+=HandleConstant.SPLIT_SYMBOL;
+                    val+= HandlerConstant.SPLIT_SYMBOL;
                 }
             }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
+            val+=String.valueOf(HandlerConstant.E_SYMBOL);
             paramsMap.put(key, val);
         }else if(isLIntArray(value)){
             Integer[] tmps= (Integer[]) value;
-            String val=String.valueOf(HandleConstant.S_SYMBOL);
+            String val=String.valueOf(HandlerConstant.S_SYMBOL);
             for(int i=0;i<tmps.length;i++){
                 val+=String.valueOf(tmps[i]);
                 if(i<tmps.length-1){
-                    val+=HandleConstant.SPLIT_SYMBOL;
+                    val+= HandlerConstant.SPLIT_SYMBOL;
                 }
             }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
+            val+=String.valueOf(HandlerConstant.E_SYMBOL);
             paramsMap.put(key, val);
         }else if(isLongArray(value)){
             long[] tmps= (long[]) value;
-            String val=String.valueOf(HandleConstant.S_SYMBOL);
+            String val=String.valueOf(HandlerConstant.S_SYMBOL);
             for(int i=0;i<tmps.length;i++){
                 val+=String.valueOf(tmps[i]);
                 if(i<tmps.length-1){
-                    val+=HandleConstant.SPLIT_SYMBOL;
+                    val+= HandlerConstant.SPLIT_SYMBOL;
                 }
             }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
+            val+=String.valueOf(HandlerConstant.E_SYMBOL);
             paramsMap.put(key, val);
         }else if(isLLongArray(value)){
             Long[] tmps= (Long[]) value;
-            String val=String.valueOf(HandleConstant.S_SYMBOL);
+            String val=String.valueOf(HandlerConstant.S_SYMBOL);
             for(int i=0;i<tmps.length;i++){
                 val+=String.valueOf(tmps[i]);
                 if(i<tmps.length-1){
-                    val+=HandleConstant.SPLIT_SYMBOL;
+                    val+= HandlerConstant.SPLIT_SYMBOL;
                 }
             }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
+            val+=String.valueOf(HandlerConstant.E_SYMBOL);
             paramsMap.put(key, val);
         }else if(isFloatArray(value)){
             float[] tmps= (float[]) value;
-            String val=String.valueOf(HandleConstant.S_SYMBOL);
+            String val=String.valueOf(HandlerConstant.S_SYMBOL);
             for(int i=0;i<tmps.length;i++){
                 val+=String.valueOf(tmps[i]);
                 if(i<tmps.length-1){
-                    val+=HandleConstant.SPLIT_SYMBOL;
+                    val+= HandlerConstant.SPLIT_SYMBOL;
                 }
             }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
+            val+=String.valueOf(HandlerConstant.E_SYMBOL);
             paramsMap.put(key, val);
         }else if(isLFloatArray(value)){
             Float[] tmps= (Float[]) value;
-            String val=String.valueOf(HandleConstant.S_SYMBOL);
+            String val=String.valueOf(HandlerConstant.S_SYMBOL);
             for(int i=0;i<tmps.length;i++){
                 val+=String.valueOf(tmps[i]);
                 if(i<tmps.length-1){
-                    val+=HandleConstant.SPLIT_SYMBOL;
+                    val+= HandlerConstant.SPLIT_SYMBOL;
                 }
             }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
+            val+=String.valueOf(HandlerConstant.E_SYMBOL);
             paramsMap.put(key, val);
         }else if(isDoubleArray(value)){
             double[] tmps= (double[]) value;
-            String val=String.valueOf(HandleConstant.S_SYMBOL);
+            String val=String.valueOf(HandlerConstant.S_SYMBOL);
             for(int i=0;i<tmps.length;i++){
                 val+=String.valueOf(tmps[i]);
                 if(i<tmps.length-1){
-                    val+=HandleConstant.SPLIT_SYMBOL;
+                    val+= HandlerConstant.SPLIT_SYMBOL;
                 }
             }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
+            val+=String.valueOf(HandlerConstant.E_SYMBOL);
             paramsMap.put(key, val);
         }else if(isLDoubleArray(value)){
             Double[] tmps= (Double[]) value;
-            String val=String.valueOf(HandleConstant.S_SYMBOL);
+            String val=String.valueOf(HandlerConstant.S_SYMBOL);
             for(int i=0;i<tmps.length;i++){
                 val+=String.valueOf(tmps[i]);
                 if(i<tmps.length-1){
-                    val+=HandleConstant.SPLIT_SYMBOL;
+                    val+= HandlerConstant.SPLIT_SYMBOL;
                 }
             }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
+            val+=String.valueOf(HandlerConstant.E_SYMBOL);
             paramsMap.put(key, val);
         }else if(isList(value)){
             List tmps= (List) value;
-            String val=HandleConstant.FLAG_SYMBOL+String.valueOf(HandleConstant.S_SYMBOL);
+            String val= HandlerConstant.FLAG_SYMBOL+String.valueOf(HandlerConstant.S_SYMBOL);
             for(int i=0;i<tmps.size();i++){
                 Map<String,Object> map=new HashMap<>();
-                in(map,HandleConstant.KEY_SYMBOL,tmps.get(i),true);
-                val+=map.get(HandleConstant.KEY_SYMBOL);
+                in(map, HandlerConstant.KEY_SYMBOL,tmps.get(i),true);
+                val+=map.get(HandlerConstant.KEY_SYMBOL);
                 if(i<tmps.size()-1){
-                    val+=HandleConstant.SPLIT_SYMBOL;
+                    val+= HandlerConstant.SPLIT_SYMBOL;
                 }
             }
-            val+=String.valueOf(HandleConstant.E_SYMBOL);
+            val+=String.valueOf(HandlerConstant.E_SYMBOL);
             paramsMap.put(key, val);
         }else if(isMap(value)){
             Map tmp= (Map) value;
-            String val=HandleConstant.FLAG_SYMBOL+String.valueOf(HandleConstant.START_SYMBOL);
+            String val= HandlerConstant.FLAG_SYMBOL+String.valueOf(HandlerConstant.START_SYMBOL);
             Set<Map.Entry> en=tmp.entrySet();
             boolean isFirst=true;
             for(Map.Entry e:en){
                 if(!isFirst){
-                    val+=HandleConstant.SPLIT_SYMBOL;
+                    val+= HandlerConstant.SPLIT_SYMBOL;
                 }
                 isFirst=false;
                 Map<String,Object> rmap=new HashMap<>();
-                in(rmap,HandleConstant.KEY_SYMBOL,e.getValue(),true);
-                val+=String.valueOf(e.getKey())+HandleConstant.COLON_SYMBOL+rmap.get(HandleConstant.KEY_SYMBOL);
+                in(rmap, HandlerConstant.KEY_SYMBOL,e.getValue(),true);
+                val+=String.valueOf(e.getKey())+ HandlerConstant.COLON_SYMBOL+rmap.get(HandlerConstant.KEY_SYMBOL);
             }
-            val+=String.valueOf(HandleConstant.END_SYMBOL);
+            val+=String.valueOf(HandlerConstant.END_SYMBOL);
             paramsMap.put(key, val);
         }else{
             Field[] fs=value.getClass().getDeclaredFields();
-            String val=HandleConstant.FLAG_SYMBOL+String.valueOf(HandleConstant.START_SYMBOL);
+            String val= HandlerConstant.FLAG_SYMBOL+String.valueOf(HandlerConstant.START_SYMBOL);
             boolean isFirst=true;
             for (Field f : fs) {
                 if(!isFirst){
-                    val+=HandleConstant.SPLIT_SYMBOL;
+                    val+= HandlerConstant.SPLIT_SYMBOL;
                 }
                 isFirst=false;
                 Object v=null;
@@ -474,11 +534,11 @@ public class InParams {
                 }
                 f.setAccessible(false);
                 Map<String,Object> rmap=new HashMap<>();
-                in(rmap,HandleConstant.KEY_SYMBOL,v,true);
-                val+=f.getName()+HandleConstant.COLON_SYMBOL+rmap.get(HandleConstant.KEY_SYMBOL);
+                in(rmap, HandlerConstant.KEY_SYMBOL,v,true);
+                val+=f.getName()+ HandlerConstant.COLON_SYMBOL+rmap.get(HandlerConstant.KEY_SYMBOL);
 
             }
-            val+=String.valueOf(HandleConstant.END_SYMBOL);
+            val+=String.valueOf(HandlerConstant.END_SYMBOL);
             paramsMap.put(key, val);
         }
 

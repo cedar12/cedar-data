@@ -25,7 +25,7 @@ public class ProxyHandler implements InvocationHandler {
 
     private static Map<Method,String> sqlMap=new HashMap<>();
     private static Map<Method,String> returnMap=new HashMap<>();
-    private static ScriptEngine engine = HandleConstant.MANAGER.getEngineByName(HandleConstant.JS_SYMBOL);
+    private static ScriptEngine engine = HandlerConstant.MANAGER.getEngineByName(HandlerConstant.JS_SYMBOL);
 
     private JdbcManager jdbc;
 
@@ -40,7 +40,7 @@ public class ProxyHandler implements InvocationHandler {
         URL url = ProxyHandler.class.getClassLoader().getResource("");
         File file = new File(url.getPath()+path);
         ByteBuffer buffer = ByteBuffer.allocate(1024);
-        String content=HandleConstant.EMPTY_SYMBOL;
+        String content= HandlerConstant.EMPTY_SYMBOL;
         try{
             FileChannel inFc = new FileInputStream(file).getChannel();
             buffer.clear();
@@ -50,9 +50,9 @@ public class ProxyHandler implements InvocationHandler {
         }catch(Exception e){
             e.printStackTrace();
         }
-        content = HandleConstant.ANNOTATION.matcher(content).replaceAll(HandleConstant.EMPTY_SYMBOL);
-        HandleConstant.ANNOTATION = Pattern.compile("\r\n",Pattern.DOTALL);
-        content = HandleConstant.ANNOTATION.matcher(content).replaceAll(HandleConstant.EMPTY_SYMBOL);
+        content = HandlerConstant.ANNOTATION.matcher(content).replaceAll(HandlerConstant.EMPTY_SYMBOL);
+        HandlerConstant.ANNOTATION = Pattern.compile("\r\n",Pattern.DOTALL);
+        content = HandlerConstant.ANNOTATION.matcher(content).replaceAll(HandlerConstant.EMPTY_SYMBOL);
         Method[] methods=cls.getDeclaredMethods();
         for(Method method:methods){
             String pattern = "\\s*?"+method.getName()+"((\\s+?(.*?)\\s*?)|\\s*?):\\s*?\\{((.*?))\\}\\s*?;";
@@ -101,16 +101,16 @@ public class ProxyHandler implements InvocationHandler {
         int startFlag = 0;
         int endFlag = 0;
         for (int i = 0; i < msg.length(); i++) {
-            if (msg.charAt(i) == HandleConstant.S_SYMBOL&&msg.charAt(i-1)==HandleConstant.WELL_SYMBOL) {
+            if (msg.charAt(i) == HandlerConstant.S_SYMBOL&&msg.charAt(i-1)== HandlerConstant.WELL_SYMBOL) {
                 startFlag++;
                 if (startFlag == endFlag + 1) {
                     start = i;
                 }
-            } else if (msg.charAt(i) == HandleConstant.E_SYMBOL) {
+            } else if (msg.charAt(i) == HandlerConstant.E_SYMBOL) {
                 endFlag++;
                 if (endFlag == startFlag) {
                     Map<String,String> map=new HashMap<>();
-                    map.put(msg.substring(start + 1, i),(start+1)+HandleConstant.SPLIT_SYMBOL+i);
+                    map.put(msg.substring(start + 1, i),(start+1)+ HandlerConstant.SPLIT_SYMBOL+i);
                     list.add(map);
                 }
             }
@@ -162,17 +162,17 @@ public class ProxyHandler implements InvocationHandler {
     private String parseSql(String regSql,Map<String,Object> paramsMap){
 
         List<Map<String, String>> reg=extractMessage(regSql);
-        String sql=regSql.trim().replaceAll("\r",HandleConstant.EMPTY_SYMBOL).replaceAll("\n",HandleConstant.EMPTY_SYMBOL);
+        String sql=regSql.trim().replaceAll("\r", HandlerConstant.EMPTY_SYMBOL).replaceAll("\n", HandlerConstant.EMPTY_SYMBOL);
         for(int i=reg.size()-1;i>=0;i--) {
             Map<String,String> regs=reg.get(i);
             Set<Map.Entry<String, String>> entryMap=regs.entrySet();
             for(Map.Entry<String, String> e:entryMap){
-                String var=HandleConstant.EMPTY_SYMBOL;
+                String var= HandlerConstant.EMPTY_SYMBOL;
                 Set<Map.Entry<String, Object>> entrySet = paramsMap.entrySet();
                 for (Map.Entry<String, Object> entry : entrySet) {
                     if(InParams.isString(entry.getValue())){
-                        if(entry.getValue().toString().startsWith(HandleConstant.FLAG_SYMBOL)){
-                            String value=entry.getValue().toString().replaceAll(HandleConstant.FLAG_SYMBOL,"");
+                        if(entry.getValue().toString().startsWith(HandlerConstant.FLAG_SYMBOL)){
+                            String value=entry.getValue().toString().replaceAll(HandlerConstant.FLAG_SYMBOL,"");
                             var += "var " + entry.getKey() + "=" + value + ";";
                         }else {
                             var += "var " + entry.getKey() + "=\"" + entry.getValue() + "\";";
@@ -183,7 +183,7 @@ public class ProxyHandler implements InvocationHandler {
                 }
                 long time=System.currentTimeMillis();
                 Object eval = eval(e.getKey(), var);
-                String[] index=e.getValue().split(HandleConstant.SPLIT_SYMBOL);
+                String[] index=e.getValue().split(HandlerConstant.SPLIT_SYMBOL);
                 String startSql=sql.substring(0,Integer.parseInt(index[0])-2);
                 String endSql=sql.substring(Integer.parseInt(index[1])+1,sql.length());
                 sql = startSql+eval+endSql;
@@ -225,7 +225,7 @@ public class ProxyHandler implements InvocationHandler {
             if(isDQL(sql)){
                 returnObj=jdbc.excuteQueryCount(sql);
                 returnObj=parseReturnValue(returnObj,type);
-            }else if(returnType.equalsIgnoreCase(HandleConstant.KEY_SYMBOL)){
+            }else if(returnType.equalsIgnoreCase(HandlerConstant.KEY_SYMBOL)){
                 returnObj=jdbc.excuteGetGeneratedKe(sql);
                 returnObj=parseReturnValue(returnObj,type);
             }else{
@@ -267,9 +267,9 @@ public class ProxyHandler implements InvocationHandler {
      * @return
      */
     private Object parseReturnValue(Object obj,int type){
-        if(type==HandleConstant.TYPE_LONG||type==HandleConstant.TYPE_LONG_){
+        if(type== HandlerConstant.TYPE_LONG||type== HandlerConstant.TYPE_LONG_){
             obj=Long.parseLong(obj.toString());
-        }if(type==HandleConstant.TYPE_INT||type==HandleConstant.TYPE_INTEGER){
+        }if(type== HandlerConstant.TYPE_INT||type== HandlerConstant.TYPE_INTEGER){
             obj=Integer.parseInt(obj.toString());
         }
         return obj;
@@ -322,7 +322,7 @@ public class ProxyHandler implements InvocationHandler {
         Class<?> t=method.getReturnType();
         String returnType=returnMap.get(method);
         int type=type(t);
-        if((!HandleConstant.EMPTY_SYMBOL.equals(returnType.trim()))&&(!HandleConstant.MAP_SYMBOL.equals(returnType))&&(!HandleConstant.PACK_MAP_SYMBOL.equals(returnType))&&type==4){
+        if((!HandlerConstant.EMPTY_SYMBOL.equals(returnType.trim()))&&(!HandlerConstant.MAP_SYMBOL.equals(returnType))&&(!HandlerConstant.PACK_MAP_SYMBOL.equals(returnType))&&type==4){
             List<Object> list=new ArrayList<>();
             try {
                 Class<?> cls=Class.forName(returnType);
@@ -339,37 +339,37 @@ public class ProxyHandler implements InvocationHandler {
     }
 
     private boolean isDQL(String sql){
-        return sql.startsWith(HandleConstant.SELECT_SYMBOL)||sql.startsWith(HandleConstant.SELECT_SYMBOL.toUpperCase());
+        return sql.startsWith(HandlerConstant.SELECT_SYMBOL)||sql.startsWith(HandlerConstant.SELECT_SYMBOL.toUpperCase());
     }
 
     private int type(Class<?> t){
         if(t==int.class){
-            return HandleConstant.TYPE_INT;
+            return HandlerConstant.TYPE_INT;
         }
         if(t==Integer.class){
-            return HandleConstant.TYPE_INTEGER;
+            return HandlerConstant.TYPE_INTEGER;
         }
         if(t==long.class){
-            return HandleConstant.TYPE_LONG;
+            return HandlerConstant.TYPE_LONG;
         }
         if(t==Long.class){
-            return HandleConstant.TYPE_LONG_;
+            return HandlerConstant.TYPE_LONG_;
         }
-        return HandleConstant.TYPE_OTHER;
+        return HandlerConstant.TYPE_OTHER;
     }
 
 
     private Object eval(String reg,String var){
-        String isReturnStr=reg.contains(HandleConstant.RETURN_SYMBOL)?HandleConstant.EMPTY_SYMBOL:HandleConstant.RETURN_SYMBOL;
+        String isReturnStr=reg.contains(HandlerConstant.RETURN_SYMBOL)? HandlerConstant.EMPTY_SYMBOL: HandlerConstant.RETURN_SYMBOL;
         try {
-            engine.eval(HandleConstant.FUN_SYMBOL+HandleConstant.ONE_EMPTY_SYMBOL + HandleConstant.EVAL_NAME_SYMBOL + "()" +HandleConstant.START_SYMBOL+var+isReturnStr+HandleConstant.ONE_EMPTY_SYMBOL+reg+HandleConstant.END_SYMBOL);
+            engine.eval(HandlerConstant.FUN_SYMBOL+ HandlerConstant.ONE_EMPTY_SYMBOL + HandlerConstant.EVAL_NAME_SYMBOL + "()" + HandlerConstant.START_SYMBOL+var+isReturnStr+ HandlerConstant.ONE_EMPTY_SYMBOL+reg+ HandlerConstant.END_SYMBOL);
         } catch (ScriptException e) {
             e.printStackTrace();
         }
         Invocable invocable = (Invocable) engine;
         Object o = null;
         try {
-            o = invocable.invokeFunction(HandleConstant.EVAL_NAME_SYMBOL);
+            o = invocable.invokeFunction(HandlerConstant.EVAL_NAME_SYMBOL);
         } catch (ScriptException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {

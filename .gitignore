@@ -1,0 +1,6 @@
+target
+!target/*.jar
+test
+out
+*.iml
+.idea

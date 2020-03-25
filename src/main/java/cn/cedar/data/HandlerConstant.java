@@ -1,14 +1,18 @@
 package cn.cedar.data;
 
+import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
  * @author 413338772@qq.com
  */
-class HandleConstant {
+public class HandlerConstant {
 
-    private HandleConstant(){};
+    protected HandlerConstant(){};
 
     protected static final char START_SYMBOL=123;
     protected static final char END_SYMBOL=125;
@@ -28,8 +32,12 @@ class HandleConstant {
     protected static final String RETURN_SYMBOL="return";
     protected static final String ONE_EMPTY_SYMBOL=" ";
     protected static final String FUN_SYMBOL="function";
-    protected static final String EVAL_NAME_SYMBOL="parse_express";
+    protected static final String EVAL_NAME_SYMBOL="p_exp";
     protected static final String FLAG_SYMBOL="!S ";
+    protected static final String PLACEHOLDER_SYMBOL="@?";
+
+    protected static final String EXP_SYMBOL="express";
+    protected static final String SQL_SYMBOL="sql";
 
 
     protected static final int TYPE_INT=0;
@@ -40,5 +48,35 @@ class HandleConstant {
 
     protected static Pattern ANNOTATION = Pattern.compile("\\/\\*.*?\\*\\/",Pattern.DOTALL);
     protected static ScriptEngineManager MANAGER = new ScriptEngineManager();
+    protected static ScriptEngine ENGINE = HandlerConstant.MANAGER.getEngineByName(HandlerConstant.JS_SYMBOL);
+
+
+    protected static Map<Method,String> sqlMap=new HashMap<>();
+    protected static Map<Method,String> returnMap=new HashMap<>();
+
+    protected static Map<Class,Object> proxyMap=new HashMap<>();
+
+    protected static Map<Method,Map<String,Object>> parseSqlMap=new HashMap<>();
+
+
+    protected static JdbcManager jdbc=new JdbcManager();
+
+    public static void setJdbc(JdbcManager jdbc){
+        HandlerConstant.jdbc=jdbc;
+    }
+
+    public static JdbcManager getJdbcManager(){
+        return jdbc;
+    }
+
+    protected static boolean displaySql=false;
+
+    public static void setDisplaySql(boolean display){
+        displaySql=display;
+    }
+
+    protected static String placeholderSymbol(int count){
+        return String.valueOf(S_SYMBOL)+count+String.valueOf(E_SYMBOL);
+    }
 
 }
