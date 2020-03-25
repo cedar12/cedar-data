@@ -226,7 +226,7 @@ public class ProxyHandler implements InvocationHandler {
                 returnObj=jdbc.excuteQueryCount(sql);
                 returnObj=parseReturnValue(returnObj,type);
             }else if(returnType.equalsIgnoreCase(HandlerConstant.KEY_SYMBOL)){
-                returnObj=jdbc.excuteGetGeneratedKe(sql);
+                returnObj=jdbc.excuteGetGeneratedKey(sql);
                 returnObj=parseReturnValue(returnObj,type);
             }else{
                 returnObj = jdbc.excute(sql);

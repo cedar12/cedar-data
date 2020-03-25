@@ -42,6 +42,7 @@ public class StatementActuator extends HandlerConstant {
     public static Object perform(Method method, String sql){
         Object data=null;
         Class<?> cls=method.getReturnType();
+        String returnType=returnMap.get(method);
         if(isDQL(sql)){
             if(isNumber(cls)!=-1){
                 data=performNumberDQL(cls,sql);
@@ -49,7 +50,6 @@ public class StatementActuator extends HandlerConstant {
                 data=jdbc.excuteQueryOne(sql);
             }else if(InParams.isList(cls)){
                 List<Map<String,Object>> mapList=jdbc.excuteQuery(sql);
-                String returnType=returnMap.get(method);
                 if(InParams.isNull(returnType)||EMPTY_SYMBOL.equals(returnType)){
                     data=mapList;
                 }else{
@@ -69,7 +69,11 @@ public class StatementActuator extends HandlerConstant {
             }
         }else{
             if(isNumber(cls)!=-1){
-                data=performNumberDML(cls,sql);
+                if(returnType!=null&&returnType.equalsIgnoreCase(KEY_SYMBOL)){
+                    data=performNumberKeyDML(cls,sql);
+                }else {
+                    data = performNumberDML(cls, sql);
+                }
             }else{
                 jdbc.excute(sql);
             }
@@ -111,6 +115,25 @@ public class StatementActuator extends HandlerConstant {
             result=Float.parseFloat(String.valueOf(count));
         }else if(InParams.isDouble(o)){
             result=Double.parseDouble(String.valueOf(count));
+        }
+        return result;
+    }
+
+    private static Object performNumberKeyDML(Class<?> o,String sql){
+        Object result=null;
+        int key=jdbc.excuteGetGeneratedKey(sql);
+        if(InParams.isByte(o)){
+            result=Byte.parseByte(String.valueOf(key));
+        }else if(InParams.isShort(o)){
+            result=Short.parseShort(String.valueOf(key));
+        }else if(InParams.isInt(o)){
+            result=key;
+        }else if(InParams.isLong(o)){
+            result=Long.parseLong(String.valueOf(key));
+        }else if(InParams.isFloat(o)){
+            result=Float.parseFloat(String.valueOf(key));
+        }else if(InParams.isDouble(o)){
+            result=Double.parseDouble(String.valueOf(key));
         }
         return result;
     }

@@ -13,9 +13,22 @@ Maven项目
 </dependency>
 ```
 非Maven项目
-下载target/cedar-data-版本号.jar文件引入你的项目
+cedar-data-版本号.jar文件引入你的项目
 
 如何使用
+
+在项目根目录创建jdbc.properties文件，内容如下
+```properties
+#以mysql为例
+url=jdbc:mysql://127.0.0.1:3306/test
+#数据库用户
+user=root
+#数据库密码
+password=**
+#驱动类全路径
+driverClass=com.mysql.jdbc.Driver
+```
+
 
 新建ADao.java
 ```java

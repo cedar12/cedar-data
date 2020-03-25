@@ -213,7 +213,7 @@ public class JdbcManager {
 	 * @param params
 	 * @return
 	 */
-	public final int excuteGetGeneratedKe(String sql,Object... params) {
+	public final int excuteGetGeneratedKey(String sql,Object... params) {
 		Connection conn=getConnection();
 		PreparedStatement ps=null;
 		ResultSet rs=null;
