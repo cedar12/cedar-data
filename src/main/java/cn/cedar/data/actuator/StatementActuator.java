@@ -50,7 +50,7 @@ public class StatementActuator extends HandlerConstant {
                 data=jdbc.excuteQueryOne(sql);
             }else if(InParams.isList(cls)){
                 List<Map<String,Object>> mapList=jdbc.excuteQuery(sql);
-                if(InParams.isNull(returnType)||EMPTY_SYMBOL.equals(returnType)){
+                if(InParams.isNull(returnType)||EMPTY_SYMBOL.equals(returnType)||MAP_SYMBOL.equalsIgnoreCase(returnType)||"java.util.Map".equals(returnType)){
                     data=mapList;
                 }else{
                     List<Object> list=new ArrayList<>();

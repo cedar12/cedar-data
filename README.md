@@ -1,5 +1,13 @@
 # cedar-data
-简单易用持久层框架
+简单易用持久层框架（基于jdbc）
+
+![issuee](https://img.shields.io/github/issues/cedar12/cedar-data)
+![jdk](https://img.shields.io/badge/jdk-1.7%2B-brightgreen)
+![forks](https://img.shields.io/github/forks/cedar12/cedar-data)
+![stars](https://img.shields.io/github/stars/cedar12/cedar-data)
+![license](https://img.shields.io/github/license/cedar12/cedar-data)
+![maven](https://img.shields.io/badge/maven-Cedar%20Data-green)
+
 
 # 使用
 Maven项目
@@ -69,7 +77,7 @@ public class Main{
 文件内容格式
 ```
 /*这是注释，不会被解析*/
-方法名 返回类型(可选):{
+方法名 全类名(方法返回类型是List<类>的必填，其它可不填):{
 sql主体（可使用#[]表达式输出值）
 };
 ```
@@ -81,7 +89,7 @@ sql主体（可使用#[]表达式输出值）
 
 3.实体类返回类型必需全类名
 
-4.一个方法sql必需已;符号结尾
+4.一条方法sql必需已;符号结尾
 
 
 
