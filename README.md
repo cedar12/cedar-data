@@ -12,7 +12,7 @@
 
 # 使用
 Maven项目
-> 依赖可在https://search.maven.org/artifact/com.github.cedar12/cedar-data/ 中搜索到
+> 可在Maven中央仓库中搜索到
 ```xml
 <dependency>
   <groupId>com.github.cedar12</groupId>
@@ -38,7 +38,6 @@ password=**
 driverClass=com.mysql.jdbc.Driver
 ```
 
-
 新建ADao.java
 ```java
 public interface  ADao{
@@ -51,6 +50,47 @@ public interface  ADao{
 }
 
 ```
+
+
+默认使用DriverManager.getConnection()获取连接，如需使用连接池，使用如下（已druid连接池为例）
+1.继承cn.cedar.JdbcManager
+2.重写init()、getConnection()方法
+
+```java
+public class DruidDataSourceManager extends JdbcManager {
+
+    /**
+     * 初始化连接池
+     * @return
+     */
+    @Override
+    public DataSource init(){
+        DruidDataSource datasource=new DruidDataSource();
+        datasource.setUrl(getUrl());
+        datasource.setUsername(getUser());
+        datasource.setPassword(getPassword());
+        datasource.setDriverClassName(getDriverClass());
+        return datasource;
+    }
+
+    /**
+     * 获取连接
+     * @return
+     */
+    @Override
+    public Connection getConnection() {
+        try {
+            // dataSource为JdbcManager成员变量
+            return dataSource.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}
+```
+
+
 新建Main.java
 ```java
 public class Main{
@@ -59,7 +99,11 @@ public class Main{
         1.1.x+ 版本 的实例获取
         */
         ADao d=InstanceFactory.getInstance(ADao.class);
-
+        // 使用druid连接池
+        InstanceFactory.setJdbcManager(new DruidDataSourceManager());
+        
+        // 是否将sql打印到控制台，默认false
+        InstanceFactory.setDisplaySql(true);
         /*
         1.0.x 版本 的实例获取
         */
@@ -68,7 +112,14 @@ public class Main{
         // 获取ADao的实例
         ADao d= (ADao) factory.getInstance(ADao.class);
 
+        JdbcManager manager=InstanceFactory.getJdbcManager();
+        // 关闭自动提交，开始事务
+        manager.setAutoCommit(false);
         d.insert(1,'张三');
+        // 回滚事务
+        manager.rollback();
+        // 提交事务
+        manager.commit();
     }
 }
 ```
@@ -113,8 +164,11 @@ select id,b from test
 update:{
 update test set  a=#[a] #[b!=null?', b='+b:'']  where id=#[id]
 };
+/*
+1.1.2开始新增args方式获取参数值 args是数组类型  下标对应接口类中参数顺序从0开始。该获取参数值方式可不使用@Param()注解
+*/
 del:{
-delete from test where  id=#[id]
+delete from test where  id=#[args[0]]
 };
 count:{
 SELECT count(1) from test #[a!=null||b!=null?'where 1=1':''] #[a!=null?' and a='+a:'']  #[b!=null?' and b like'+b:'']

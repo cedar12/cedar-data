@@ -1,5 +1,7 @@
 package cn.cedar.data;
 
+import sun.misc.JavaSecurityProtectionDomainAccess;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.lang.reflect.Method;
@@ -21,6 +23,9 @@ public class HandlerConstant {
     protected static final char WELL_SYMBOL=35;
     protected static final char SINGLE_SYMBOL=39;
     protected static final char DOUBLE_SYMBOL=34;
+    protected static final char S_TMP_SYMBOL='@';
+    protected static final char E_TMP_SYMBOL='`';
+    protected static final char EXP_FLAG_SYMBOL='#';
     protected static final String MAP_SYMBOL="map";
     protected static final String PACK_MAP_SYMBOL="java.util.Map";
     protected static final String EMPTY_SYMBOL="";
@@ -35,6 +40,8 @@ public class HandlerConstant {
     protected static final String EVAL_NAME_SYMBOL="p_exp";
     protected static final String FLAG_SYMBOL="!S ";
     protected static final String PLACEHOLDER_SYMBOL="@?";
+
+    protected static final String ARGS_SYMBOL="args";
 
     protected static final String EXP_SYMBOL="express";
     protected static final String SQL_SYMBOL="sql";

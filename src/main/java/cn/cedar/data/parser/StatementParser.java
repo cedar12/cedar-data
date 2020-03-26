@@ -18,7 +18,7 @@ public class StatementParser extends HandlerConstant{
 
     private StatementParser(){};
 
-    public static void parseContent(String content,Class<?> cls){
+    private static void parseContent(String content,Class<?> cls){
         content = ANNOTATION.matcher(content).replaceAll(EMPTY_SYMBOL);
         ANNOTATION = Pattern.compile("\r\n",Pattern.DOTALL);
         content = ANNOTATION.matcher(content).replaceAll(EMPTY_SYMBOL);
@@ -41,7 +41,7 @@ public class StatementParser extends HandlerConstant{
         }
     }
 
-    public static void parseSql(Class<?> cls){
+    private static void parseSql(Class<?> cls){
         Method[] methods=cls.getDeclaredMethods();
         for(Method method:methods) {
             String statement=sqlMap.get(method);
@@ -64,7 +64,41 @@ public class StatementParser extends HandlerConstant{
 
     public static void parse(String content,Class<?> cls){
         parseContent(content,cls);
-        parseSql(cls);
+        Method[] methods=cls.getDeclaredMethods();
+        for(Method method:methods) {
+            String sql=sqlMap.get(method);
+            List<String> list=new ArrayList<>();
+            parseSql(sql,list);
+            Map<String,Object> map=new HashMap<>();
+            for (int i = 0; i < list.size(); i++) {
+                String[] indexs=list.get(i).split(SPLIT_SYMBOL)[1].split(COLON_SYMBOL);
+                sql=sql.substring(0,Integer.parseInt(indexs[0])-1)+placeholderSymbol(i)+sql.substring(Integer.parseInt(indexs[1])+1);
+            }
+            map.put(EXP_SYMBOL,list);
+            map.put(SQL_SYMBOL,sql);
+            parseSqlMap.put(method,map);
+        }
+    }
+
+    private static void parseSql(String msg,List<String> list){
+        char[] chars=msg.toCharArray();
+        int s=-1,e=0;
+        s=msg.lastIndexOf(S_SYMBOL);
+        if(s<=-1){
+            return;
+        }
+        for(int i=s;i<chars.length;i++){
+            if(chars[i]==E_SYMBOL){
+                e=i;
+                break;
+            }
+        }
+        chars[s]=S_TMP_SYMBOL;
+        chars[e]=E_TMP_SYMBOL;
+        if(s>0&&chars[s-1]==EXP_FLAG_SYMBOL){
+            list.add((msg.substring(s,e+1).replaceAll(String.valueOf(S_TMP_SYMBOL),String.valueOf(S_SYMBOL)).replaceAll(String.valueOf(E_TMP_SYMBOL),String.valueOf(E_SYMBOL)))+SPLIT_SYMBOL+s+COLON_SYMBOL+e);
+        }
+        parseSql(new String(chars),list);
     }
 
 }

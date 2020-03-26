@@ -21,6 +21,8 @@ import java.util.Map;
  */
 public final class InstanceProxy extends HandlerConstant implements InvocationHandler {
 
+
+
     /**
      * @param cls
      */
@@ -81,7 +83,7 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
         if(Object.class.equals(method.getDeclaringClass())){
             return method.invoke(this,args);
         }
-        return exec(method,args);
+        return exec(proxy.getClass(),method,args);
     }
 
     /**
@@ -91,7 +93,7 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
      * @return
      * @throws NoMatchMethodException
      */
-    private Object exec(Method method,Object[] args) throws NoMatchMethodException {
+    private Object exec(Class<?> cls,Method method,Object[] args) throws NoMatchMethodException, NoSuchMethodException {
         Map<String,Object> sqlMap=parseSqlMap.get(method);
         if(sqlMap==null){
             throw new NoMatchMethodException(method);
@@ -101,12 +103,13 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
         List<String> exps= (List<String>) sqlMap.get(EXP_SYMBOL);
         for (int i = 0; i < exps.size(); i++) {
             String exp=exps.get(i);
-            exp=exp.trim().substring(2,exp.length()-1);
+            String[] expAndIndex=exp.split(SPLIT_SYMBOL);
+            exp=expAndIndex[0].substring(1,expAndIndex[0].length()-1);
             Object res=ExpressionParser.parse(exp,var);
             sql=sql.replace(placeholderSymbol(i),String.valueOf(res));
         }
         if(displaySql){
-            System.out.println(sql);
+            System.err.println(sql);
         }
         return StatementActuator.perform(method,sql);
     }

@@ -1,5 +1,6 @@
 package cn.cedar.data;
 
+import javax.sql.DataSource;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
@@ -20,7 +21,7 @@ public class JdbcManager {
 
 	public static boolean isAutoClose=true;
 
-	protected Connection connection;
+	private Connection connection;
 
 	static {
 		register();
@@ -40,9 +41,18 @@ public class JdbcManager {
 
 	protected  static String getPassword(){return password;}
 
-	public void setConnection(Connection connection){
-		this.connection=connection;
+	protected DataSource dataSource=null;
+
+	public JdbcManager(){
+		setDataSource();
+		getConn();
 	}
+
+	private void setDataSource(){
+		dataSource=init();
+	}
+
+	public DataSource init(){return null;}
 
 	/**
 	 * 注册驱动
@@ -69,7 +79,7 @@ public class JdbcManager {
 	public final void setAutoCommit(boolean autoCommit){
 		isAutoClose=autoCommit;
 		try {
-			getConnection().setAutoCommit(autoCommit);
+			getConn().setAutoCommit(autoCommit);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -93,7 +103,6 @@ public class JdbcManager {
 	 * 事务回滚
 	 */
 	public final void rollback(){
-
 		try {
 			connection.rollback();
 			connection.setAutoCommit(false);
@@ -126,15 +135,22 @@ public class JdbcManager {
 	 * @return
 	 */
 	public Connection getConnection() {
+		if(url==null||user==null||password==null){
+			return null;
+		}
 		try {
-			if(isClosed()){
-				connection = DriverManager.getConnection(url, user, password);
-			}
-			return connection;
+			return DriverManager.getConnection(url, user, password);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+	}
+
+	private Connection getConn(){
+		if(isClosed()){
+			connection = getConnection();
+		}
+		return connection;
 	}
 	
 	/**
@@ -144,12 +160,12 @@ public class JdbcManager {
 	 * @return
 	 */
 	public final List<Map<String,Object>> excuteQuery(String sql,Object... params) {
-		Connection conn=getConnection();
+		Connection connection=getConn();
 		List<Map<String,Object>> results=new ArrayList<Map<String,Object>>();
 		PreparedStatement ps=null;
 		ResultSet rs=null;
 		try {
-			ps=conn.prepareStatement(sql);
+			ps=connection.prepareStatement(sql);
 			for(int i=1;i<=params.length;i++) {
 				ps.setObject(i, params[i-1]);
 			}
@@ -168,7 +184,7 @@ public class JdbcManager {
 			e.printStackTrace();
 		} finally {
 			if(isAutoClose){
-				close(conn,ps,rs);
+				close(connection,ps,rs);
 			}else{
 				close(null,ps,rs);
 			}
@@ -183,10 +199,10 @@ public class JdbcManager {
 	 * @return
 	 */
 	public final int excute(String sql,Object... params) {
-		Connection conn=getConnection();
+		Connection connection=getConn();
 		PreparedStatement ps=null;
 		try {
-			ps=conn.prepareStatement(sql);
+			ps=connection.prepareStatement(sql);
 			for(int i=1;i<=params.length;i++) {
 				ps.setObject(i, params[i-1]);
 			}
@@ -198,7 +214,7 @@ public class JdbcManager {
 			e.printStackTrace();
 		} finally {
 			if(isAutoClose){
-				close(conn,ps,null);
+				close(connection,ps,null);
 			}else{
 				close(null,ps,null);
 			}
@@ -213,11 +229,11 @@ public class JdbcManager {
 	 * @return
 	 */
 	public final int excuteGetGeneratedKey(String sql,Object... params) {
-		Connection conn=getConnection();
+		Connection connection=getConn();
 		PreparedStatement ps=null;
 		ResultSet rs=null;
 		try {
-			ps=conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+			ps=connection.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 			for(int i=1;i<=params.length;i++) {
 				ps.setObject(i, params[i-1]);
 			}
@@ -232,7 +248,7 @@ public class JdbcManager {
 			e.printStackTrace();
 		} finally {
 			if(isAutoClose){
-				close(conn,ps,rs);
+				close(connection,ps,rs);
 			}else{
 				close(null,ps,rs);
 			}
@@ -247,12 +263,12 @@ public class JdbcManager {
 	 * @return
 	 */
 	public final Map<String,Object> excuteQueryOne(String sql,Object... params) {
-		Connection conn=getConnection();
+		Connection connection=getConn();
 		Map<String,Object> columnMap=new HashMap<String,Object>();
 		PreparedStatement ps=null;
 		ResultSet rs=null;
 		try {
-			ps=conn.prepareStatement(sql);
+			ps=connection.prepareStatement(sql);
 			for(int i=1;i<=params.length;i++) {
 				ps.setObject(i, params[i-1]);
 			}
@@ -269,7 +285,7 @@ public class JdbcManager {
 			e.printStackTrace();
 		} finally {
 			if(isAutoClose){
-				close(conn,ps,rs);
+				close(connection,ps,rs);
 			}else{
 				close(null,ps,rs);
 			}
@@ -285,11 +301,11 @@ public class JdbcManager {
 	 * @return
 	 */
 	public final long excuteQueryCount(String sql,Object... params) {
-		Connection conn=getConnection();
+		Connection connection=getConn();
 		PreparedStatement ps=null;
 		ResultSet rs=null;
 		try {
-			ps=conn.prepareStatement(sql);
+			ps=connection.prepareStatement(sql);
 			for(int i=1;i<=params.length;i++) {
 				ps.setObject(i, params[i-1]);
 			}
@@ -301,7 +317,7 @@ public class JdbcManager {
 			e.printStackTrace();
 		} finally {
 			if(isAutoClose){
-				close(conn,ps,rs);
+				close(connection,ps,rs);
 			}else{
 				close(null,ps,rs);
 			}

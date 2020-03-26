@@ -487,6 +487,19 @@ public class InParams extends HandlerConstant{
             }
             val+=String.valueOf(HandlerConstant.E_SYMBOL);
             paramsMap.put(key, val);
+        }else if(value instanceof Object[]||value.getClass()==Object[].class){
+            Object[] tmps= (Object[]) value;
+            String val= HandlerConstant.FLAG_SYMBOL+String.valueOf(HandlerConstant.S_SYMBOL);
+            for(int i=0;i<tmps.length;i++){
+                Map<String,Object> map=new HashMap<>();
+                in(map, HandlerConstant.KEY_SYMBOL,tmps[i],true);
+                val+=map.get(HandlerConstant.KEY_SYMBOL);
+                if(i<tmps.length-1){
+                    val+= HandlerConstant.SPLIT_SYMBOL;
+                }
+            }
+            val+=String.valueOf(HandlerConstant.E_SYMBOL);
+            paramsMap.put(key, val);
         }else if(isList(value)){
             List tmps= (List) value;
             String val= HandlerConstant.FLAG_SYMBOL+String.valueOf(HandlerConstant.S_SYMBOL);
