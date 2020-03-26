@@ -148,7 +148,7 @@ sql主体（可使用#[]表达式输出值）
 新建ADao.java同级目录文件ADao
 ```
 /*插入数据*/
-insert:{
+insert /*此次填写key则会返回插入数据库中的自增长id（需数据库支持）*/:{
 insert into test(id#[a!=null?',a':'']#[b!=null?',b':'']) values(null#[a!=null?','+a:'']#[b!=null?','+b:''])
 };
 /*查询数据返回map*/
