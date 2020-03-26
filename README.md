@@ -6,7 +6,7 @@
 ![](https://img.shields.io/github/forks/cedar12/cedar-data.svg)
 ![](https://img.shields.io/github/stars/cedar12/cedar-data.svg)
 ![](https://img.shields.io/github/license/cedar12/cedar-data.svg)
-![](https://img.shields.io/badge/maven-Cedar%20Data-green.svg)
+![](https://img.shields.io/badge/maven-com.github.cedar12-green.svg)
 ![](https://img.shields.io/badge/language-java-green.svg)
 
 
