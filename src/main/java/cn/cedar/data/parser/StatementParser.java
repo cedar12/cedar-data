@@ -3,10 +3,7 @@ package cn.cedar.data.parser;
 import cn.cedar.data.HandlerConstant;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,12 +16,19 @@ public class StatementParser extends HandlerConstant{
     private StatementParser(){};
 
     private static void parseContent(String content,Class<?> cls){
+        content = content.replaceAll("\r|\n", "");
+        StringTokenizer pas = new StringTokenizer(content, " ");
+        content = "";
+        while (pas.hasMoreTokens()) {
+            String s = pas.nextToken();
+            content = content + s + " ";
+        }
         content = ANNOTATION.matcher(content).replaceAll(EMPTY_SYMBOL);
-        ANNOTATION = Pattern.compile("\r\n",Pattern.DOTALL);
-        content = ANNOTATION.matcher(content).replaceAll(EMPTY_SYMBOL);
+
         Method[] methods=cls.getDeclaredMethods();
+        Pattern p=Pattern.compile("\\s+?");
         for(Method method:methods){
-            String pattern = "\\s*?"+method.getName()+"((\\s+?(.*?)\\s*?)|\\s*?):\\s*?\\{((.*?))\\}\\s*?;";
+            String pattern ="\\s*?"+method.getName()+"((\\s+?(.*?)\\s*?)|\\s*?):\\s*?\\{((.*?))\\}\\s*?;";
             Pattern r = Pattern.compile(pattern,Pattern.DOTALL);
             Matcher m = r.matcher(content);
             if (m.find( )&&m.groupCount()>1) {
@@ -33,11 +37,11 @@ public class StatementParser extends HandlerConstant{
                     returnType="";
                 }
                 returnMap.put(method,returnType.trim());
-                sqlMap.put(method,m.group(m.groupCount()-1).trim());
-            } else {
-                System.out.println(method.getName()+" no match");
+                String sql=m.group(m.groupCount()-1).trim();
+                sqlMap.put(method,sql);
+            }else{
+                System.err.println(method.getName()+" no match");
             }
-
         }
     }
 
@@ -71,7 +75,8 @@ public class StatementParser extends HandlerConstant{
             parseSql(sql,list);
             Map<String,Object> map=new HashMap<>();
             for (int i = 0; i < list.size(); i++) {
-                String[] indexs=list.get(i).split(SPLIT_SYMBOL)[1].split(COLON_SYMBOL);
+                String line=list.get(i);
+                String[] indexs=line.substring(line.lastIndexOf(",")+1).split(COLON_SYMBOL);
                 sql=sql.substring(0,Integer.parseInt(indexs[0])-1)+placeholderSymbol(i)+sql.substring(Integer.parseInt(indexs[1])+1);
             }
             map.put(EXP_SYMBOL,list);

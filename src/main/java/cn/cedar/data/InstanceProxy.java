@@ -38,13 +38,7 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
      */
     private String getMapperPath(Class<?> cls){
         String[] paths=cls.getName().split("\\.");
-        String path="";
-        for (int i=0;i<paths.length;i++){
-            path+=paths[i];
-            if(i<paths.length-1){
-                path+="\\"+File.separator;
-            }
-        }
+        String path=cls.getName().replaceAll("\\.","/");
         return path;
     }
 
@@ -53,9 +47,10 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
      * @param cls
      */
     private void init(Class<?> cls){
-        URL url = ProxyHandler.class.getClassLoader().getResource("");
+        URL url = InstanceProxy.class.getClassLoader().getResource("");
+        System.out.println(url.getPath() + getMapperPath(cls));
         File file = new File(url.getPath()+getMapperPath(cls));
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        ByteBuffer buffer = ByteBuffer.allocate((int)file.length());
         String content= HandlerConstant.EMPTY_SYMBOL;
         try{
             FileChannel inFc = new FileInputStream(file).getChannel();
@@ -104,8 +99,8 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
         List<String> exps= (List<String>) sqlMap.get(EXP_SYMBOL);
         for (int i = 0; i < exps.size(); i++) {
             String exp=exps.get(i);
-            String[] expAndIndex=exp.split(SPLIT_SYMBOL);
-            exp=expAndIndex[0].substring(1,expAndIndex[0].length()-1);
+            String ep=exp.substring(0,exp.lastIndexOf(SPLIT_SYMBOL));
+            exp=ep.substring(1,ep.length()-1);
             try {
                 Object res = ExpressionParser.parse(exp, var);
                 sql=sql.replace(placeholderSymbol(i),String.valueOf(res));
