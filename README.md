@@ -38,7 +38,7 @@ password=**
 driverClass=com.mysql.jdbc.Driver
 ```
 
-新建ADao.java
+## 新建ADao.java
 ```java
 public interface  ADao{
     Integer insert(@Param("a") Integer a, @Param("b")String b);
@@ -91,7 +91,7 @@ public class DruidDataSourceManager extends JdbcManager {
 ```
 
 
-新建Main.java
+## 新建Main.java
 ```java
 public class Main{
     public static void main(String[] args){
@@ -124,7 +124,7 @@ public class Main{
 }
 ```
 
-方法sql文件
+## 方法sql文件
 
 文件内容格式
 ```
@@ -143,8 +143,8 @@ sql主体（可使用#[]表达式输出值）
 
 4.一条方法sql必需已;符号结尾
 
-## #[]表达式
-\#[]表达式含js特性
+## `#[]`表达式
+`#[]`表达式含js特性
 ### 变量
 ```javascript
 // 变量名不能是args和方法参数@Param注解内值
@@ -208,12 +208,12 @@ while(判断语句){
 
 ### 数组
 
-属性 | 说明 
-- | - 
-length | 设置或返回数组中元素的数目。 
+| 属性 | 说明 | 
+| ---- | ------ |
+| length | 设置或返回数组中元素的数目。| 
 
-方法|说明
-- |-
+|方法|说明|
+|---- |----|
 concat()|连接两个或更多的数组，并返回结果。
 join()|把数组的所有元素放入一个字符串。元素通过指定的分隔符进行分隔。
 pop()	|删除并返回数组的最后一个元素
