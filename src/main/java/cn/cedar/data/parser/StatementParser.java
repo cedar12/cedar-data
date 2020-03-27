@@ -81,6 +81,7 @@ public class StatementParser extends HandlerConstant{
     }
 
     private static void parseSql(String msg,List<String> list){
+        if(msg==null||msg.isEmpty()){return;}
         char[] chars=msg.toCharArray();
         int s=-1,e=0;
         s=msg.lastIndexOf(S_SYMBOL);

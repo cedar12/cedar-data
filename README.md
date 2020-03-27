@@ -174,3 +174,4 @@ count:{
 SELECT count(1) from test #[a!=null||b!=null?'where 1=1':''] #[a!=null?' and a='+a:'']  #[b!=null?' and b like'+b:'']
 };
 ```
+

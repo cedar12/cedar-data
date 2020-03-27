@@ -1,6 +1,7 @@
 package cn.cedar.data;
 
 import cn.cedar.data.actuator.StatementActuator;
+import cn.cedar.data.expcetion.DynamicMethodSqlReferenceException;
 import cn.cedar.data.expcetion.NoMatchMethodException;
 import cn.cedar.data.parser.ExpressionParser;
 import cn.cedar.data.parser.ParameterParser;
@@ -91,9 +92,9 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
      * @param method
      * @param args
      * @return
-     * @throws NoMatchMethodException
+     * @throws NoMatchMethodException DynamicMethodSqlReferenceException
      */
-    private Object exec(Class<?> cls,Method method,Object[] args) throws NoMatchMethodException, NoSuchMethodException {
+    private Object exec(Class<?> cls,Method method,Object[] args) throws NoMatchMethodException, DynamicMethodSqlReferenceException {
         Map<String,Object> sqlMap=parseSqlMap.get(method);
         if(sqlMap==null){
             throw new NoMatchMethodException(method);
@@ -105,8 +106,12 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
             String exp=exps.get(i);
             String[] expAndIndex=exp.split(SPLIT_SYMBOL);
             exp=expAndIndex[0].substring(1,expAndIndex[0].length()-1);
-            Object res=ExpressionParser.parse(exp,var);
-            sql=sql.replace(placeholderSymbol(i),String.valueOf(res));
+            try {
+                Object res = ExpressionParser.parse(exp, var);
+                sql=sql.replace(placeholderSymbol(i),String.valueOf(res));
+            }catch (DynamicMethodSqlReferenceException e){
+                throw new DynamicMethodSqlReferenceException(method,e.getMessage());
+            }
         }
         if(displaySql){
             System.err.println(sql);

@@ -1,10 +1,7 @@
 package cn.cedar.data;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author 413338772@qq.com
@@ -273,6 +270,13 @@ public class InParams extends HandlerConstant{
     public static boolean isMap(Class<?> o){
         return o!=null&&o== Map.class;
     }
+
+    public static boolean isDate(Object o){
+        return o!=null&&o instanceof Date;
+    }
+    public static boolean isDate(Class<?> o){
+        return o!=null&&o== Date.class;
+    }
     /**
      *
      * @param o
@@ -334,10 +338,11 @@ public class InParams extends HandlerConstant{
         if(isNull(value)){
             paramsMap.put(key, value);
         }else if (isString(value)||isChar(value)) {
+            String val=value.toString().replaceAll("-- ","").replaceAll("//","").replaceAll("/*","").replaceAll("\\*\\/","");
             if(preIs){
-                paramsMap.put(key, "\""+String.valueOf(HandlerConstant.SINGLE_SYMBOL) + value +String.valueOf(HandlerConstant.SINGLE_SYMBOL)+"\"");
+                paramsMap.put(key, "\""+String.valueOf(HandlerConstant.SINGLE_SYMBOL) + val +String.valueOf(HandlerConstant.SINGLE_SYMBOL)+"\"");
             }else {
-                paramsMap.put(key, String.valueOf(HandlerConstant.SINGLE_SYMBOL) + value + String.valueOf(HandlerConstant.SINGLE_SYMBOL));
+                paramsMap.put(key, String.valueOf(HandlerConstant.SINGLE_SYMBOL) + val + String.valueOf(HandlerConstant.SINGLE_SYMBOL));
             }
         }else if(isByte(value)||isShort(value)||isInt(value)||isLong(value)||isFloat(value)||isDouble(value)){
             paramsMap.put(key, value);
@@ -528,6 +533,10 @@ public class InParams extends HandlerConstant{
                 val+=String.valueOf(e.getKey())+ HandlerConstant.COLON_SYMBOL+rmap.get(HandlerConstant.KEY_SYMBOL);
             }
             val+=String.valueOf(HandlerConstant.END_SYMBOL);
+            paramsMap.put(key, val);
+        }else if(isDate(value)){
+            Date date= (Date) value;
+            String val="new Date("+date.getTime()+")";
             paramsMap.put(key, val);
         }else{
             Field[] fs=value.getClass().getDeclaredFields();

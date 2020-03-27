@@ -23,7 +23,7 @@ public class InstanceFactory extends HandlerConstant{
     }
 
     /**
-     *
+     * 获取实例
      * @param cls
      * @param <T>
      * @return
