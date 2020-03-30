@@ -1,6 +1,7 @@
 package cn.cedar.data;
 
 import cn.cedar.data.actuator.StatementActuator;
+import cn.cedar.data.annotation.CedarData;
 import cn.cedar.data.expcetion.DynamicMethodSqlReferenceException;
 import cn.cedar.data.expcetion.NoMatchMethodException;
 import cn.cedar.data.parser.ExpressionParser;
@@ -9,6 +10,7 @@ import cn.cedar.data.parser.StatementParser;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -47,9 +49,17 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
      * @param cls
      */
     private void init(Class<?> cls){
+        String path="";
         URL url = InstanceProxy.class.getClassLoader().getResource("");
-        System.out.println(url.getPath() + getMapperPath(cls));
-        File file = new File(url.getPath()+getMapperPath(cls));
+        Annotation anno=cls.getAnnotation(CedarData.class);
+        if(anno!=null&&!((CedarData)anno).dms().trim().equals("")){
+            CedarData cd= (CedarData) anno;
+            path=url.getPath()+cd.dms();
+        }else{
+            path=url.getPath()+getMapperPath(cls);
+        }
+        System.out.println(path);
+        File file = new File(path);
         ByteBuffer buffer = ByteBuffer.allocate((int)file.length());
         String content= HandlerConstant.EMPTY_SYMBOL;
         try{

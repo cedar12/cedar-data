@@ -6,7 +6,7 @@
     <name>cedar-data</name>
     <groupId>com.github.cedar12</groupId>
     <artifactId>cedar-data</artifactId>
-    <version>1.1.4</version>
+    <version>1.1.5</version>
     <description>简单易用持久层框架</description>
     <url>https://github.com/cedar12/cedar-data</url>
 

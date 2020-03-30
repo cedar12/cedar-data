@@ -1,6 +1,7 @@
 package cn.cedar.data;
 
 import javax.sql.DataSource;
+import javax.xml.crypto.Data;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
@@ -41,10 +42,20 @@ public class JdbcManager {
 
 	protected  static String getPassword(){return password;}
 
-	protected DataSource dataSource=null;
+	protected static DataSource dataSource=null;
+
+	public static void setDataSource(DataSource dataSource){
+		JdbcManager.dataSource=dataSource;
+	}
 
 	public JdbcManager(){
-		setDataSource();
+		if(dataSource==null){
+			setDataSource();
+		}
+		getConn();
+	}
+	public JdbcManager(DataSource dataSource){
+		JdbcManager.dataSource=dataSource;
 		getConn();
 	}
 
@@ -135,11 +146,8 @@ public class JdbcManager {
 	 * @return
 	 */
 	public Connection getConnection() {
-		if(url==null||user==null||password==null){
-			return null;
-		}
 		try {
-			return DriverManager.getConnection(url, user, password);
+			return dataSource!=null?dataSource.getConnection():DriverManager.getConnection(url, user, password);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);

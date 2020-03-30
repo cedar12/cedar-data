@@ -2,7 +2,7 @@ package cn.cedar.data.parser;
 
 import cn.cedar.data.HandlerConstant;
 import cn.cedar.data.InParams;
-import cn.cedar.data.Param;
+import cn.cedar.data.annotation.Param;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

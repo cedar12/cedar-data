@@ -23,6 +23,16 @@ public class InstanceFactory extends HandlerConstant{
     }
 
     /**
+     * 预加载实例
+     * @param cls
+     */
+    public static void preload(Class<?>... cls){
+        for (Class<?> c : cls) {
+            getInstance(c);
+        }
+    }
+
+    /**
      * 获取实例
      * @param cls
      * @param <T>

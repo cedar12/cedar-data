@@ -1,5 +1,6 @@
 package cn.cedar.data;
 
+import cn.cedar.data.annotation.Param;
 import cn.cedar.data.expcetion.NoMatchMethodException;
 
 import javax.script.Invocable;
