@@ -10,6 +10,8 @@
 ![](https://img.shields.io/badge/language-java-green.svg)
 
 
+集成Spring详情见 [cedar-data-spring](https://github.com/cedar12/cedar-data-spring.git)
+
 # 使用
 Maven项目
 > 可在Maven中央仓库中搜索到
