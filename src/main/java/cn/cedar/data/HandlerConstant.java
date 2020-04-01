@@ -26,6 +26,7 @@ public class HandlerConstant {
     protected static final char S_TMP_SYMBOL='@';
     protected static final char E_TMP_SYMBOL='`';
     protected static final char EXP_FLAG_SYMBOL='#';
+    protected static final String FILE_SPLIT_SYMBOL="/";
     protected static final String MAP_SYMBOL="map";
     protected static final String PACK_MAP_SYMBOL="java.util.Map";
     protected static final String EMPTY_SYMBOL="";
@@ -46,12 +47,23 @@ public class HandlerConstant {
     protected static final String EXP_SYMBOL="express";
     protected static final String SQL_SYMBOL="sql";
 
+    protected static final String DATE_FORMAT="Date.prototype.format = function (fmt) { var o = {'M+': this.getMonth() + 1, 'd+': this.getDate(), 'h+': this.getHours(), 'm+': this.getMinutes(), 's+': this.getSeconds(), 'q+': Math.floor((this.getMonth() + 3) / 3), 'S': this.getMilliseconds() }; if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length)); for (var k in o) if (new RegExp('(' + k + ')').test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length))); return '\\''+fmt+'\\'';};";
+    protected static final String STRING_TO="String.prototype.to=function(){ var s=this.toString(); if(s[0]=='\\''&&s[s.length-1]=='\\''){ return s.substring(1,s.length-1); }else if(s[0]=='\\''&&s[s.length-1]!='\\''){ return s+'\\''; }else if(s[0]!='\\''&&s[s.length-1]=='\\''){ return '\\''+s; }else{ return '\\''+s+'\\''; }};";
 
     protected static final int TYPE_INT=0;
     protected static final int TYPE_INTEGER=1;
     protected static final int TYPE_LONG=2;
     protected static final int TYPE_LONG_=3;
     protected static final int TYPE_OTHER=4;
+
+    protected static int MAX_LAYER=5;
+
+    public static void setMaxLayer(int max){
+        if(max>0){
+            MAX_LAYER=max;
+        }
+    }
+
 
     protected static Pattern ANNOTATION = Pattern.compile("\\/\\*.*?\\*\\/",Pattern.DOTALL);
     protected static ScriptEngineManager MANAGER = new ScriptEngineManager();

@@ -5,17 +5,15 @@ import cn.cedar.data.annotation.CedarData;
 import cn.cedar.data.expcetion.DynamicMethodSqlReferenceException;
 import cn.cedar.data.expcetion.NoMatchMethodException;
 import cn.cedar.data.parser.ExpressionParser;
+import cn.cedar.data.parser.ImportStatementParser;
 import cn.cedar.data.parser.ParameterParser;
 import cn.cedar.data.parser.StatementParser;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.lang.annotation.Annotation;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +38,7 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
      */
     private String getMapperPath(Class<?> cls){
         String[] paths=cls.getName().split("\\.");
-        String path=cls.getName().replaceAll("\\.","/");
+        String path=cls.getName().replaceAll("\\.",FILE_SPLIT_SYMBOL);
         return path;
     }
 
@@ -50,28 +48,30 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
      */
     private void init(Class<?> cls){
         String path="";
-        URL url = InstanceProxy.class.getClassLoader().getResource("");
-        Annotation anno=cls.getAnnotation(CedarData.class);
-        if(anno!=null&&!((CedarData)anno).dms().trim().equals("")){
-            CedarData cd= (CedarData) anno;
-            path=url.getPath()+cd.dms();
+        CedarData anno=cls.getAnnotation(CedarData.class);
+        if(anno!=null&&!anno.dms().trim().isEmpty()){
+            if(anno.dms().startsWith(FILE_SPLIT_SYMBOL)){
+                path=anno.dms();
+            }else {
+                path = FILE_SPLIT_SYMBOL + anno.dms();
+            }
         }else{
-            path=url.getPath()+getMapperPath(cls);
+            path=FILE_SPLIT_SYMBOL+getMapperPath(cls);
         }
-        System.out.println(path);
-        File file = new File(path);
-        ByteBuffer buffer = ByteBuffer.allocate((int)file.length());
-        String content= HandlerConstant.EMPTY_SYMBOL;
-        try{
-            FileChannel inFc = new FileInputStream(file).getChannel();
-            buffer.clear();
-            int length = inFc.read(buffer);
-            content=new String(buffer.array(),0,length,"UTF-8");
-            inFc.close();
-        }catch(Exception e){
-            e.printStackTrace();
+        BufferedReader in = new BufferedReader(new InputStreamReader(cls.getResourceAsStream(path)));
+        StringBuffer buffer = new StringBuffer();
+        String line = "";
+        while (true){
+            try {
+                if (!((line = in.readLine()) != null)) break;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            buffer.append(line);
         }
+        String content=buffer.toString();
         if(!HandlerConstant.EMPTY_SYMBOL.equals(content)){
+            content+=ImportStatementParser.importParser(content,cls,0);
             StatementParser.parse(content,cls);
         }
     }

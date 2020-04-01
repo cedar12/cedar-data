@@ -4,3 +4,4 @@ test
 out
 *.iml
 .idea
+*.log

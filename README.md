@@ -266,3 +266,11 @@ SELECT count(1) from test #[a!=null||b!=null?'where 1=1':''] #[a!=null?' and a='
 };
 ```
 
+
+## 版本
+#### 1.1.6
+##### 新增
+动态方法sql文件新增import 文件路径;导入文件。导入不得超过指定层数，默认层数5
+`#[]`表达式Date对象新增format方法格式化日期 yyyy-MM-dd
+`#[]`表达式字符串新增to方法将sql字符转js字符，如果试js字符则转sql字符
+
