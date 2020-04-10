@@ -264,6 +264,12 @@ delete from test where  id=#[args[0]]
 count:{
 SELECT count(1) from test #[a!=null||b!=null?'where 1=1':''] #[a!=null?' and a='+a:'']  #[b!=null?' and b like'+b:'']
 };
+/*1.2.0 新增语法*/
+def a="user_id as userId";
+selectDef:{
+select ${a} from test where 1=1 #[a!=null?'and  a='+a:'']
+/*等同 select user_id as userId  from test where 1=1 #[a!=null?'and  a='+a:'']*/
+}
 ```
 
 
@@ -273,4 +279,40 @@ SELECT count(1) from test #[a!=null||b!=null?'where 1=1':''] #[a!=null?' and a='
 动态方法sql文件新增import 文件路径;导入文件。导入不得超过指定层数，默认层数5
 `#[]`表达式Date对象新增format方法格式化日期 yyyy-MM-dd
 `#[]`表达式字符串新增to方法将sql字符转js字符，如果试js字符则转sql字符
+
+
+#### 1.1.7
+##### 兼容
+cedar-data-spring-boot-starter
+
+
+#### 1.1.8
+##### 兼容
+cedar-data-spring-boot-starter
+
+#### 1.2.0
+##### 新增
+1.  动态sql文件将更名Cedar Data文件（简称cd文件）并以.cd为文件后缀
+    - Dao -> Dao.cd
+2.  支持private关键词，被private修饰的不会被import
+    - private del:{delete from test};
+2.  cd文件支持定义常量
+    - def a="user_id id"; 可被import
+    - private def a="user_id id"; 不可被import
+    - 使用#{a}表达式使用常量a
+3.  实体类字段值注入优先使用set方法注入，次之字段直接注入
+
+
+## 后期计划
+1.  [x] 动态sql文件将更名Cedar Data文件（简称暂定cd文件）并暂定以.cd为文件后缀
+    - Dao -> Dao.cd
+2.  [x] 支持private关键词，被private修饰的不会被import
+    - private del:{delete from test};
+2.  [x] cd文件支持定义常量
+    - def a="user_id id"; 可被import
+    - private def a="user_id id"; 不可被import
+3.  [x] 实体类字段值注入优先使用set方法注入，次之字段直接注入
+4.  [ ] cd文件支持定义类字段映射
+    - def user=class:cn.cedar.data.User id:user_id,name:user_name;（格式待定）
+
 

@@ -1,18 +1,14 @@
 package cn.cedar.data;
 
 import cn.cedar.data.actuator.StatementActuator;
-import cn.cedar.data.annotation.CedarData;
 import cn.cedar.data.expcetion.DynamicMethodSqlReferenceException;
 import cn.cedar.data.expcetion.NoMatchMethodException;
+import cn.cedar.data.parser.CedarDataFileParser;
 import cn.cedar.data.parser.ExpressionParser;
-import cn.cedar.data.parser.ImportStatementParser;
 import cn.cedar.data.parser.ParameterParser;
-import cn.cedar.data.parser.StatementParser;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -46,34 +42,8 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
      *
      * @param cls
      */
-    private void init(Class<?> cls){
-        String path="";
-        CedarData anno=cls.getAnnotation(CedarData.class);
-        if(anno!=null&&!anno.dms().trim().isEmpty()){
-            if(anno.dms().startsWith(FILE_SPLIT_SYMBOL)){
-                path=anno.dms();
-            }else {
-                path = FILE_SPLIT_SYMBOL + anno.dms();
-            }
-        }else{
-            path=FILE_SPLIT_SYMBOL+getMapperPath(cls);
-        }
-        BufferedReader in = new BufferedReader(new InputStreamReader(cls.getResourceAsStream(path)));
-        StringBuffer buffer = new StringBuffer();
-        String line = "";
-        while (true){
-            try {
-                if (!((line = in.readLine()) != null)) break;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            buffer.append(line);
-        }
-        String content=buffer.toString();
-        if(!HandlerConstant.EMPTY_SYMBOL.equals(content)){
-            content+=ImportStatementParser.importParser(content,cls,0);
-            StatementParser.parse(content,cls);
-        }
+    private void init(Class<?> cls) {
+        CedarDataFileParser.parser(cls);
     }
 
     /**
@@ -87,7 +57,11 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if(Object.class.equals(method.getDeclaringClass())){
-            return method.invoke(this,args);
+            try {
+                return method.invoke(this, args);
+            }catch (InvocationTargetException e){
+                throw e.getTargetException();
+            }
         }
         return exec(proxy.getClass(),method,args);
     }
@@ -118,7 +92,7 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
                 throw new DynamicMethodSqlReferenceException(method,e.getMessage());
             }
         }
-        if(displaySql){
+        if(displaySql&&getEnv().equals(ENV_CEDAR_DATA)){
             System.err.println(sql);
         }
         return StatementActuator.perform(method,sql);

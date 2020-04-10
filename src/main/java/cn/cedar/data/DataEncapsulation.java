@@ -1,6 +1,8 @@
 package cn.cedar.data;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +33,8 @@ public class DataEncapsulation {
             e.printStackTrace();
         }
         if(obj!=null){
+            map=JdbcManager.formatHumpName(map);
+            if(map==null||map.size()==0){return null;}
             Set<Map.Entry<String,Object>> entrySet=map.entrySet();
             for(Map.Entry<String,Object> entry:entrySet){
                 Field f= null;
@@ -38,7 +42,6 @@ public class DataEncapsulation {
                     f = cls.getDeclaredField(entry.getKey());
                     if(f!=null){
                         Object val=entry.getValue();
-                        f.setAccessible(true);
                         if(f.getType()==String.class){
                             if(val instanceof Date){
                                 val=((Date)val);
@@ -49,8 +52,20 @@ public class DataEncapsulation {
                                 val = String.valueOf(val);
                             }
                         }
-                        f.set(obj,val);
-                        f.setAccessible(false);
+                        String methodName=getMethodName(entry.getKey());
+                        try {
+                            Method m=cls.getDeclaredMethod(methodName,f.getType());
+                            m.invoke(obj,val);
+                        } catch (NoSuchMethodException e) {
+                            f.setAccessible(true);
+                            f.set(obj,val);
+                            f.setAccessible(false);
+                        } catch (InvocationTargetException e) {
+                            f.setAccessible(true);
+                            f.set(obj,val);
+                            f.setAccessible(false);
+                        }
+
                     }
                 } catch (NoSuchFieldException e) {
                     e.printStackTrace();
@@ -61,6 +76,11 @@ public class DataEncapsulation {
             }
         }
         return obj;
+    }
+
+    private static String getMethodName(String key){
+        String name="set";
+        return name+key.substring(0,1).toUpperCase()+key.substring(1);
     }
 
 }

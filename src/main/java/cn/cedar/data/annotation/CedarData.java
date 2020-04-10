@@ -13,5 +13,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface CedarData{
     String value() default "";
+    @Deprecated
     String dms() default "";
+    String  cd() default "";
 }

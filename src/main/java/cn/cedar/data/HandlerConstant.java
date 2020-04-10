@@ -1,11 +1,10 @@
 package cn.cedar.data;
 
-import sun.misc.JavaSecurityProtectionDomainAccess;
-
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -15,6 +14,23 @@ import java.util.regex.Pattern;
 public class HandlerConstant {
 
     protected HandlerConstant(){};
+
+
+
+    protected static final String ENV_CEDAR_DATA="cedar-data";
+    protected static final String ENV_CEDAR_DATA_SPRING="cedar-data-spring";
+    protected static final String ENV_CEDAR_DATA_SPRING_BOOT_STARTER="cedar-data-spring-boot-starter";
+
+    protected static String env=ENV_CEDAR_DATA;
+
+    public static String getEnv() {
+        return env;
+    }
+
+    public static void setEnv(String env) {
+        HandlerConstant.env = env;
+    }
+
 
     protected static final char START_SYMBOL=123;
     protected static final char END_SYMBOL=125;
@@ -55,6 +71,19 @@ public class HandlerConstant {
     protected static final int TYPE_LONG=2;
     protected static final int TYPE_LONG_=3;
     protected static final int TYPE_OTHER=4;
+
+
+    protected static Map<Class<?>,Map<String,String>> setMap=new LinkedHashMap<>();
+
+    protected static final String KEYWORD_CONST="const";
+    protected static final String KEYWORD_DEF="def";
+    protected static final String KEYWORD_IMPORT="import";
+    protected static final String KEYWORD_PRIVATE="private";
+
+    protected static final String FILE_SUFFIX=".cd";
+
+
+
 
     protected static int MAX_LAYER=5;
 

@@ -1,7 +1,8 @@
 package cn.cedar.data;
 
 import javax.sql.DataSource;
-import javax.xml.crypto.Data;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
@@ -44,6 +45,8 @@ public class JdbcManager {
 
 	protected static DataSource dataSource=null;
 
+	private static boolean isProperty=false;
+
 	public static void setDataSource(DataSource dataSource){
 		JdbcManager.dataSource=dataSource;
 	}
@@ -52,7 +55,7 @@ public class JdbcManager {
 		if(dataSource==null){
 			setDataSource();
 		}
-		getConn();
+		//getConn();
 	}
 	public JdbcManager(DataSource dataSource){
 		JdbcManager.dataSource=dataSource;
@@ -78,8 +81,10 @@ public class JdbcManager {
 			user = prop.getProperty("user");
 			password = prop.getProperty("password");
 			driverClass = prop.getProperty("driverClass");
+			isProperty=true;
 			Class.forName(driverClass.trim());
 		} catch (Exception e) {
+			isProperty=false;
 		}
 	}
 
@@ -167,7 +172,7 @@ public class JdbcManager {
 	 * @param params
 	 * @return
 	 */
-	public final List<Map<String,Object>> excuteQuery(String sql,Object... params) {
+	public List<Map<String,Object>> excuteQuery(String sql,Object... params) {
 		Connection connection=getConn();
 		List<Map<String,Object>> results=new ArrayList<Map<String,Object>>();
 		PreparedStatement ps=null;
@@ -206,7 +211,7 @@ public class JdbcManager {
 	 * @param params
 	 * @return
 	 */
-	public final int excute(String sql,Object... params) {
+	public int excute(String sql,Object... params) {
 		Connection connection=getConn();
 		PreparedStatement ps=null;
 		try {
@@ -236,7 +241,7 @@ public class JdbcManager {
 	 * @param params
 	 * @return
 	 */
-	public final int excuteGetGeneratedKey(String sql,Object... params) {
+	public int excuteGetGeneratedKey(String sql,Object... params) {
 		Connection connection=getConn();
 		PreparedStatement ps=null;
 		ResultSet rs=null;
@@ -270,7 +275,7 @@ public class JdbcManager {
 	 * @param params
 	 * @return
 	 */
-	public final Map<String,Object> excuteQueryOne(String sql,Object... params) {
+	public  Map<String,Object> excuteQueryOne(String sql,Object... params) {
 		Connection connection=getConn();
 		Map<String,Object> columnMap=new HashMap<String,Object>();
 		PreparedStatement ps=null;
@@ -308,7 +313,7 @@ public class JdbcManager {
 	 * @param params
 	 * @return
 	 */
-	public final long excuteQueryCount(String sql,Object... params) {
+	public long excuteQueryCount(String sql,Object... params) {
 		Connection connection=getConn();
 		PreparedStatement ps=null;
 		ResultSet rs=null;
@@ -372,6 +377,7 @@ public class JdbcManager {
 	   * @return
 	   */
 	  public static Map<String, Object> formatHumpName(Map<String, Object> map) {
+	  	if(map==null){return map;}
 	    Map<String, Object> newMap = new HashMap<String, Object>();
 	    Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator();
 	    while (it.hasNext()) {
