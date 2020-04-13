@@ -12,6 +12,9 @@
 
 集成Spring详情见 [cedar-data-spring](https://github.com/cedar12/cedar-data-spring.git)
 
+集成Spring Boot详情见 [cedar-data-spring-boot-starter](https://github.com/cedar12/cedar-data-spring-boot-starter.git)
+
+
 # 使用
 Maven项目
 > 可在Maven中央仓库中搜索到
@@ -153,7 +156,7 @@ sql主体（可使用#[]表达式输出值）
 `#[]`表达式内字符变量用单引号
 ### 变量
 ```javascript
-// 变量名不能是args和方法参数@Param注解内值
+// 变量名不能是args和方法参数@Param注解参数值
 var a=123;
 ```
 ### 条件语句-if
@@ -236,8 +239,11 @@ unshift()	|向数组的开头添加一个或更多元素，并返回新的长度
 valueOf()	|返回数组对象的原始值 
 
 
-新建ADao.java同级目录文件ADao
+新建ADao.java同级目录文件ADao.cd
 ```
+/*导入另一cd文件内容*/
+import 文件;
+
 /*插入数据*/
 insert /*此次填写key则会返回插入数据库中的自增长id（需数据库支持）*/:{
 insert into test(id#[a!=null?',a':'']#[b!=null?',b':'']) values(null#[a!=null?','+a:'']#[b!=null?','+b:''])

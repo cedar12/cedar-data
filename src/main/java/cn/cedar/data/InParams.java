@@ -1,6 +1,7 @@
 package cn.cedar.data;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -277,6 +278,17 @@ public class InParams extends HandlerConstant{
     public static boolean isDate(Class<?> o){
         return o!=null&&o== Date.class;
     }
+
+
+    public static boolean isBigDecimal(Object o){
+        return o!=null&&o instanceof BigDecimal;
+    }
+
+    public static boolean isBigDecimal(Class<?> o){
+        return o!=null&&o==BigDecimal.class;
+    }
+
+
     /**
      *
      * @param o
