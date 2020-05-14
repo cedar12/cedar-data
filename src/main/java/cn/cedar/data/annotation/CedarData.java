@@ -7,7 +7,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * @author 413338772@qq.com
+ * @author cedar12.zxd@qq.com
  */
 @Target({TYPE})
 @Retention(RUNTIME)

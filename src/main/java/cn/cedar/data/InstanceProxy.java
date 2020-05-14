@@ -3,9 +3,11 @@ package cn.cedar.data;
 import cn.cedar.data.actuator.StatementActuator;
 import cn.cedar.data.expcetion.DynamicMethodSqlReferenceException;
 import cn.cedar.data.expcetion.NoMatchMethodException;
+import cn.cedar.data.parser.CedarDataFileContentParser;
 import cn.cedar.data.parser.CedarDataFileParser;
 import cn.cedar.data.parser.ExpressionParser;
 import cn.cedar.data.parser.ParameterParser;
+import cn.cedar.data.struct.Block;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -14,11 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author 413338772@qq.com
+ * @author cedar12.zxd@qq.com
  */
 public final class InstanceProxy extends HandlerConstant implements InvocationHandler {
 
-
+    private CedarDataFileContentParser cedarData=new CedarDataFileContentParser();
 
     /**
      * @param cls
@@ -43,7 +45,7 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
      * @param cls
      */
     private void init(Class<?> cls) {
-        CedarDataFileParser.parser(cls);
+        CedarDataFileParser.parser(cls,cedarData);
     }
 
     /**
@@ -63,7 +65,8 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
                 throw e.getTargetException();
             }
         }
-        return exec(proxy.getClass(),method,args);
+        //return exec(proxy.getClass(),method,args);
+        return excute(proxy.getClass(),method,args);
     }
 
     /**
@@ -96,6 +99,39 @@ public final class InstanceProxy extends HandlerConstant implements InvocationHa
             System.err.println(sql);
         }
         return StatementActuator.perform(method,sql);
+    }
+
+    private Object excute(Class<?> cls,Method method,Object[] args) throws NoMatchMethodException, DynamicMethodSqlReferenceException {
+        List<Block> blocks=cedarData.getBlocks();
+        Block block=null;
+        for (Block b : blocks) {
+            if(b.getName().equals(method.getName())){
+                block=b;
+            }
+        }
+        if(null==block){
+            throw new NoMatchMethodException(method);
+        }
+
+        String sql=block.getSql();
+        String var=ParameterParser.parse(method,args);
+        List<String> exps= block.getExpress();
+        for (int i = 0; i < exps.size(); i++) {
+            String exp=exps.get(i);
+            String ep=exp.substring(0,exp.lastIndexOf(SPLIT_SYMBOL));
+            exp=ep.substring(1,ep.length()-1);
+            try {
+                Object res = ExpressionParser.parse(exp, var);
+                sql=sql.replace(placeholderSymbol(i),String.valueOf(res));
+            }catch (DynamicMethodSqlReferenceException e){
+                throw new DynamicMethodSqlReferenceException(method,e.getMessage());
+            }
+        }
+        block.setSql(sql);
+        if(displaySql&&getEnv().equals(ENV_CEDAR_DATA)){
+            System.err.println(sql);
+        }
+        return StatementActuator.perform(method,block,cedarData);
     }
 
 }

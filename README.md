@@ -318,7 +318,15 @@ cedar-data-spring-boot-starter
     - def a="user_id id"; 可被import
     - private def a="user_id id"; 不可被import
 3.  [x] 实体类字段值注入优先使用set方法注入，次之字段直接注入
-4.  [ ] cd文件支持定义类字段映射
-    - def user=class:cn.cedar.data.User id:user_id,name:user_name;（格式待定）
+4.  [x] 多文件import的def定义优先级 bata.1.3.0版本实现
+    - 后一行def覆盖前一行
+5.  [x] cd文件支持定义类字段映射 beta.1.3.0版本实现
+    - def user=class:cn.cedar.data.User|id:user_id|name:user_name;
+    - oo 一对一 def user=class:cn.cedar.data.User|id:user_id|name:user_name|oo:auths:auth;
+    - om 一对多 def user=class:cn.cedar.data.User|id:user_id|name:user_name|om:auths:auth;
+    - mm 多对多 def user=class:cn.cedar.data.User|id:user_id|name:user_name|mm:auths:auth;
 
 
+## beta 计划
+#### beta.1.3.0
+.cd文件解析重构

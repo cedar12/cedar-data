@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @author cedar12.zxd@qq.com
+ */
 public class ImportStatementParser extends HandlerConstant{
 
     public static String importParser(String content,Class<?> cls,int layer) throws NullPointerException{

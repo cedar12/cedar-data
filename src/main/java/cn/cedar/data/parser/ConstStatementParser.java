@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @author cedar12.zxd@qq.com
+ */
 public class ConstStatementParser extends HandlerConstant {
 
     public static String parser(String content,Class<?> cls){

@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author 413338772@qq.com
+ * @author cedar12.zxd@qq.com
  */
 public class DataEncapsulation {
 

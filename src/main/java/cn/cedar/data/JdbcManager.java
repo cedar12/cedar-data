@@ -1,15 +1,13 @@
 package cn.cedar.data;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
 
 
 /**
- * @author 413338772@qq.com
+ * @author cedar12.zxd@qq.com
  */
 public class JdbcManager {
 

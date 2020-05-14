@@ -3,7 +3,7 @@ package cn.cedar.data;
 import java.lang.reflect.Proxy;
 
 /**
- * @author 413338772@qq.com
+ * @author cedar12.zxd@qq.com
  */
 public class InstanceFactory extends HandlerConstant{
 

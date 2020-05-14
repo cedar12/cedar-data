@@ -3,6 +3,9 @@ package cn.cedar.data.actuator;
 import cn.cedar.data.DataEncapsulation;
 import cn.cedar.data.HandlerConstant;
 import cn.cedar.data.InParams;
+import cn.cedar.data.parser.CedarDataFileContentParser;
+import cn.cedar.data.parser.CedarDataORMParser;
+import cn.cedar.data.struct.Block;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -11,7 +14,7 @@ import java.util.Map;
 
 /**
  *
- * @author 413338772@qq.com
+ * @author cedar12.zxd@qq.com
  */
 public class StatementActuator extends HandlerConstant {
 
@@ -63,6 +66,40 @@ public class StatementActuator extends HandlerConstant {
                         e.printStackTrace();
                     }
                     data=list;
+                }
+            }else{
+                data= DataEncapsulation.encapsulation(cls,jdbc.excuteQueryOne(sql));
+            }
+        }else{
+            if(isNumber(cls)!=-1){
+                if(returnType!=null&&returnType.equalsIgnoreCase(KEY_SYMBOL)){
+                    data=performNumberKeyDML(cls,sql);
+                }else {
+                    data = performNumberDML(cls, sql);
+                }
+            }else{
+                jdbc.excute(sql);
+            }
+        }
+        return data;
+    }
+
+    public static Object perform(Method method, Block block, CedarDataFileContentParser cedarData){
+        Object data=null;
+        Class<?> cls=method.getReturnType();
+        String returnType=returnMap.get(method);
+        String sql=block.getSql();
+        if(isDQL(sql)){
+            if(isNumber(cls)!=-1){
+                data=performNumberDQL(cls,sql);
+            }else if(InParams.isMap(cls)){
+                data=jdbc.excuteQueryOne(sql);
+            }else if(InParams.isList(cls)){
+                List<Map<String,Object>> mapList=jdbc.excuteQuery(sql);
+                if(InParams.isNull(block.getType())||block.getType().isEmpty()||MAP_SYMBOL.equalsIgnoreCase(block.getType())||"java.util.Map".equals(block.getType())){
+                    data=mapList;
+                }else{
+                    data=new CedarDataORMParser(mapList,cedarData).parse(block.getType());
                 }
             }else{
                 data= DataEncapsulation.encapsulation(cls,jdbc.excuteQueryOne(sql));

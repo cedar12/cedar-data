@@ -7,7 +7,7 @@ import java.util.Map;
 
 /**
  * @see cn.cedar.data.InstanceFactory
- * @author 413338772@qq.com
+ * @author cedar12.zxd@qq.com
  */
 public final class HandlerFactory<T> {
 
