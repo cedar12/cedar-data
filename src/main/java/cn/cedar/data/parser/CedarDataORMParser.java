@@ -1,19 +1,30 @@
+/**
+ *	  Copyright 2020 cedar12.zxd@qq.com
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 package cn.cedar.data.parser;
 
 import cn.cedar.data.CedarDataBase;
 import cn.cedar.data.InParams;
 import cn.cedar.data.expcetion.SyntaxException;
-import org.w3c.dom.Attr;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * @author cedar12.zxd@qq.com
@@ -34,7 +45,10 @@ public class CedarDataORMParser extends CedarDataBase {
 	private String ormFieldName=null;
 	
 	private Class<?> subCls=null;
-	
+
+
+	private List<Map<String,Object>> subsInfoMap=new ArrayList<>();
+
 	private Map<String,String> fields=new HashMap<>();
 	
 	private Map<String,String> subFields=new HashMap<>();
@@ -248,7 +262,10 @@ public class CedarDataORMParser extends CedarDataBase {
 		return null;
 	}
 
-	private Object converType(Class<?> cls,Object value){
+	public static Object converType(Class<?> cls,Object value){
+		if(value==null||(InParams.isString(value)&&value.toString().trim().equalsIgnoreCase("null"))){
+			return null;
+		}
 		if(InParams.isByte(cls)){
 			return Byte.parseByte(String.valueOf(value));
 		}else if(InParams.isShort(cls)){
@@ -261,6 +278,10 @@ public class CedarDataORMParser extends CedarDataBase {
 			return Float.parseFloat(String.valueOf(value));
 		}else if(InParams.isDouble(cls)){
 			return Float.parseFloat(String.valueOf(value));
+		}else if(InParams.isBigDecimal(cls)){
+			return new BigDecimal(String.valueOf(value));
+		}else if(InParams.isString(cls)){
+			return String.valueOf(value);
 		}else{
 			return value;
 		}
@@ -388,7 +409,7 @@ public class CedarDataORMParser extends CedarDataBase {
 					m.invoke(obj,converType(typeCls,value));
 				} catch (NoSuchMethodException e) {
 					f.setAccessible(true);
-					f.set(obj,value);
+					f.set(obj,converType(typeCls,value));
 					f.setAccessible(false);
 				} catch (InvocationTargetException e) {
 					f.setAccessible(true);

@@ -1,3 +1,18 @@
+/**
+ *	  Copyright 2020 cedar12.zxd@qq.com
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 package cn.cedar.data;
 
 import javax.sql.DataSource;
@@ -66,9 +81,7 @@ public class JdbcManager {
 
 	public DataSource init(){return null;}
 
-	/**
-	 * 注册驱动
-	 */
+
 	private static void register(){
 		try {
 			Properties prop = new Properties();
@@ -87,7 +100,7 @@ public class JdbcManager {
 	}
 
 	/**
-	 * 设置事务是否开启
+	 * enabled transaction
 	 * @param autoCommit
 	 */
 	public final void setAutoCommit(boolean autoCommit){
@@ -100,7 +113,7 @@ public class JdbcManager {
 	}
 
 	/**
-	 * 事务提交
+	 * commit transaction
 	 */
 	public final void commit(){
 		try {
@@ -114,7 +127,7 @@ public class JdbcManager {
 	}
 
 	/**
-	 * 事务回滚
+	 * rollback transaction
 	 */
 	public final void rollback(){
 		try {
@@ -128,7 +141,7 @@ public class JdbcManager {
 	}
 
 	/**
-	 * 连接是否关闭
+	 * connection is closed
 	 * @return
 	 */
 	public final boolean isClosed(){
@@ -145,7 +158,7 @@ public class JdbcManager {
 	}
 
 	/**
-	 * 获取连接
+	 * return connection
 	 * @return
 	 */
 	public Connection getConnection() {
@@ -165,7 +178,7 @@ public class JdbcManager {
 	}
 	
 	/**
-	 * 执行结果为多条数据的DQL
+	 * execute DQL
 	 * @param sql
 	 * @param params
 	 * @return
@@ -204,7 +217,7 @@ public class JdbcManager {
 	}
 	
 	/**
-	 * 执行DML
+	 * execute DML
 	 * @param sql
 	 * @param params
 	 * @return
@@ -234,7 +247,7 @@ public class JdbcManager {
 	}
 
 	/**
-	 * 执行DML并返回自增长id
+	 * execute DML and return generated key
 	 * @param sql
 	 * @param params
 	 * @return
@@ -268,7 +281,7 @@ public class JdbcManager {
 	}
 	
 	/**
-	 * 执行结果为一条数据的DQL
+	 * exucte DQL return a data
 	 * @param sql
 	 * @param params
 	 * @return
@@ -306,7 +319,7 @@ public class JdbcManager {
 	
 	
 	/**
-	 * 执行结果为一条数据的DQL
+	 * exucte DQL return a data
 	 * @param sql
 	 * @param params
 	 * @return
@@ -337,7 +350,7 @@ public class JdbcManager {
 	}
 
 	/**
-	 * 关闭流
+	 * close the stream
 	 * @param conn
 	 * @param ps
 	 * @param rs
@@ -369,7 +382,7 @@ public class JdbcManager {
 	}
 	
 	/**
-	   * 将Map中的key由下划线转换为驼峰
+	   *
 	   *
 	   * @param map
 	   * @return
@@ -412,7 +425,7 @@ public class JdbcManager {
 	  }
 
 	  /**
-	   * 将List中map的key值命名方式格式化为驼峰
+	   *
 	   *
 	   * @param list
 	   * @return

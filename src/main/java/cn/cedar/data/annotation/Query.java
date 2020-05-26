@@ -13,18 +13,23 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package cn.cedar.data.expcetion;
+package cn.cedar.data.annotation;
 
-import java.lang.reflect.Method;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.util.Map;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
+ * Database Query Language
  * @author cedar12.zxd@qq.com
  */
-public class DynamicMethodSqlReferenceException extends Exception{
-    public DynamicMethodSqlReferenceException(String message) {
-        super(message);
-    }
-    public DynamicMethodSqlReferenceException(Method method, String message) {
-        super(method.getDeclaringClass()+"   Method: "+method.getName()+"   "+message);
-    }
+@Target(METHOD)
+@Retention(RUNTIME)
+public @interface Query {
+    String value();
+    Class<?> typeClass() default Map.class;
+    String type() default "";
 }

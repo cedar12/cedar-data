@@ -308,6 +308,21 @@ cedar-data-spring-boot-starter
     - 使用#{a}表达式使用常量a
 3.  实体类字段值注入优先使用set方法注入，次之字段直接注入
 
+#### 1.3.0
+##### 新增
+1.  注解@Def、@Query
+    - @CedarData(annotation=true) 开启注解方式
+    - 方法上使用@Query(value="sql语句（可同.cd文件{};内的sql写法）")
+    - 方法或字段上使用@Def(name="指定def名(不指定默认方法名或字段名)",value="def的值")
+2.  \#if、#elif、#else语句
+    - \#if 1==1:a=1 #end
+    - \#if 1==1:a=1 #else a=2 #end
+    - \#if 1==1:a=1 #elif 1==2:a=2 #else a==3 #end
+2.  占位符取值
+    - ?取值：?参数位置（从1开始）
+    - $取值：$参数名
+    - 防止sql注入
+
 
 ## 后期计划
 1.  [x] 动态sql文件将更名Cedar Data文件（简称暂定cd文件）并暂定以.cd为文件后缀
@@ -317,14 +332,20 @@ cedar-data-spring-boot-starter
 2.  [x] cd文件支持定义常量
     - def a="user_id id"; 可被import
     - private def a="user_id id"; 不可被import
-3.  [x] 实体类字段值注入优先使用set方法注入，次之字段直接注入
+    - 使用#{a}表达式取a的值
+3.  [x] 实体类字段值注入优先使用set方法注入，次之字段注入
 4.  [x] 多文件import的def定义优先级 bata.1.3.0版本实现
     - 后一行def覆盖前一行
-5.  [x] cd文件支持定义类字段映射 beta.1.3.0版本实现
-    - def user=class:cn.cedar.data.User|id:user_id|name:user_name;
-    - oo 一对一 def user=class:cn.cedar.data.User|id:user_id|name:user_name|oo:auths:auth;
-    - om 一对多 def user=class:cn.cedar.data.User|id:user_id|name:user_name|om:auths:auth;
-    - mm 多对多 def user=class:cn.cedar.data.User|id:user_id|name:user_name|mm:auths:auth;
+5.  [ ] cd文件支持定义类字段映射 beta.1.3.0版本实现（不完善）
+    - def user=class:cn.cedar.data.User,id:user_id,name:user_name;
+    - oo 一对一 def user=class:cn.cedar.data.User,id:user_id,name:user_name,oo:auths:auth;
+    - om 一对多 def user=class:cn.cedar.data.User,id:user_id,name:user_name,om:auths:auth;
+    - mm 多对多 def user=class:cn.cedar.data.User,id:user_id,name:user_name,mm:auths:auth;
+6.  [x] 支持注解@Def、@Query
+7.  [x] 支持#if、#elif、#else语句
+    - #if 条件:sql语句 #end
+8.  [x] 支持占位符?参数位置（从1开始）、$参数名
+    - 使用该方式取值可防止sql注入
 
 
 ## beta 计划

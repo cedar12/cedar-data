@@ -1,3 +1,18 @@
+/**
+ *	  Copyright 2020 cedar12.zxd@qq.com
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 package cn.cedar.data.parser;
 
 import cn.cedar.data.CedarDataBase;
@@ -56,7 +71,7 @@ public class CedarDataFileContentParser extends CedarDataBase {
 						String[] indexs=line.substring(line.lastIndexOf(",")+1).split(COLON_SYMBOL);
 						sql=sql.substring(0,Integer.parseInt(indexs[0])-1)+placeholderSymbol(i)+sql.substring(Integer.parseInt(indexs[1])+1);
 					}
-					block.setSql(sql);
+					block.setExpSql(sql);
 					block.setExpress(list);
 					block.setTarget(cls);
 				}
@@ -101,19 +116,19 @@ public class CedarDataFileContentParser extends CedarDataBase {
 	private String defParser(String content,int row) {
 		String trimContent=content.trim();
 		trimContent=defRelolver(trimContent,row);
+
 		Pattern p=Pattern.compile(PATTERN_DEF);
 		Matcher m=p.matcher(trimContent);
 		if(m.find()) {
-			if(m.groupCount()>1) {
-				String value=m.group(3).trim();
-				if(value.startsWith("\"")&&value.endsWith("\"")) {
-					value=value.substring(1, value.length()-1);
-				}
-				defs.put(m.group(1).trim(), value);
-				
-			}else {
-				throw new SyntaxException(KEYWORD_DEF,content,row,1);
+			int eqIndex=trimContent.indexOf("=");
+			String keys=trimContent.substring(0,eqIndex);
+			String key=keys.replace(KEYWORD_DEF+CONTENT_EMPTY_ONE,EMPTY_SYMBOL).trim();
+			String value=trimContent.substring(eqIndex+1).trim();
+			value=value.substring(0,value.length()-1);
+			if(value.startsWith("\"")&&value.endsWith("\"")) {
+				value=value.substring(1, value.length()-1);
 			}
+			defs.put(key, value);
 		}else {
 			throw new SyntaxException(KEYWORD_DEF,content,row,1);
 		}
@@ -172,7 +187,7 @@ public class CedarDataFileContentParser extends CedarDataBase {
 			String key=m.group(1);
 			String value=m.group(3);
 			Block b=new Block();
-			String[] keys=key.trim().replaceAll("\\s+", CONTENT_COMMA).split(CONTENT_COMMA);
+			String[] keys=key.trim().replaceAll("\\s+", CONTENT_MARK).split(CONTENT_MARK);
 			b.setName(keys[0]);
 			if(keys.length>1){
 				b.setType(keys[1]);

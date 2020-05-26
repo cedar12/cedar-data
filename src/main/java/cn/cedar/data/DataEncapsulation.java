@@ -1,4 +1,21 @@
+/**
+ *	  Copyright 2020 cedar12.zxd@qq.com
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 package cn.cedar.data;
+
+import cn.cedar.data.parser.CedarDataORMParser;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -20,9 +37,9 @@ public class DataEncapsulation {
 
     /**
      *
-     * @param cls 类
-     * @param map 数据
-     * @return 类实例
+     * @param cls  proxy class
+     * @param map data
+     * @return data object
      */
     public static Object encapsulation(Class<?> cls, Map<String,Object> map){
         Object obj= null;
@@ -46,7 +63,7 @@ public class DataEncapsulation {
                         String methodName=getMethodName(entry.getKey());
                         try {
                             Method m=cls.getDeclaredMethod(methodName,f.getType());
-                            m.invoke(obj,val);
+                            m.invoke(obj, CedarDataORMParser.converType(f.getType(),val));
                         } catch (NoSuchMethodException e) {
                             f.setAccessible(true);
                             f.set(obj,val);
@@ -56,14 +73,12 @@ public class DataEncapsulation {
                             f.set(obj,val);
                             f.setAccessible(false);
                         }
-
                     }
                 } catch (NoSuchFieldException e) {
-                    e.printStackTrace();
+
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
-
             }
         }
         return obj;

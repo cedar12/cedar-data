@@ -15,16 +15,17 @@
  */
 package cn.cedar.data.expcetion;
 
-import java.lang.reflect.Method;
-
 /**
  * @author cedar12.zxd@qq.com
  */
-public class DynamicMethodSqlReferenceException extends Exception{
-    public DynamicMethodSqlReferenceException(String message) {
-        super(message);
-    }
-    public DynamicMethodSqlReferenceException(Method method, String message) {
-        super(method.getDeclaringClass()+"   Method: "+method.getName()+"   "+message);
-    }
+public class ConditionScriptException extends CedarDataRuntimeException{
+
+	public ConditionScriptException(String msg) {
+		super(msg);
+	}
+
+	public ConditionScriptException(String msg, String content) {
+		super(msg+" \n\tat <"+content+">");
+	}
+	
 }

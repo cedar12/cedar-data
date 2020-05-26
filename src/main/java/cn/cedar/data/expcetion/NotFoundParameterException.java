@@ -15,16 +15,17 @@
  */
 package cn.cedar.data.expcetion;
 
-import java.lang.reflect.Method;
-
 /**
  * @author cedar12.zxd@qq.com
  */
-public class DynamicMethodSqlReferenceException extends Exception{
-    public DynamicMethodSqlReferenceException(String message) {
-        super(message);
-    }
-    public DynamicMethodSqlReferenceException(Method method, String message) {
-        super(method.getDeclaringClass()+"   Method: "+method.getName()+"   "+message);
-    }
+public class NotFoundParameterException extends CedarDataRuntimeException{
+
+	public NotFoundParameterException(String msg) {
+		super(msg);
+	}
+
+	public NotFoundParameterException(String msg, String content) {
+		super(msg+" \ntat <"+content+">");
+	}
+	
 }
