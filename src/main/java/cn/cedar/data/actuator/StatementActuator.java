@@ -18,6 +18,7 @@ package cn.cedar.data.actuator;
 import cn.cedar.data.DataEncapsulation;
 import cn.cedar.data.HandlerConstant;
 import cn.cedar.data.InParams;
+import cn.cedar.data.MapperData;
 import cn.cedar.data.annotation.Param;
 import cn.cedar.data.parser.CedarDataFileContentParser;
 import cn.cedar.data.parser.CedarDataORMParser;
@@ -118,6 +119,7 @@ public class StatementActuator extends HandlerConstant {
                     data=mapList;
                 }else{
                     data=new CedarDataORMParser(mapList,cedarData).parse(block.getType());
+                    data=new MapperData(mapList).parse(block.getType());
                     if(data==null){
                         List<Object> list=new ArrayList<>();
                         try {

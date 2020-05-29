@@ -42,6 +42,7 @@ public class CedarDataBase extends HandlerConstant{
     protected static final String TYPE_SPLIT=",|\\|";
     protected static final String METHOD_SET="set";
     protected static final String METHOD_GET="get";
+    protected static final String STR_NULL="null";
 
     protected static final String PATTERN_IMPORT="import(\\s.+)?(.+)?;";
     protected static final String PATTERN_DEF="def(\\s.+)?(.+)?=((.+));";
