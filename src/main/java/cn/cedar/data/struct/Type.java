@@ -19,7 +19,7 @@ public class Type{
     private String firstFieldName;
     private String secondFieldName;
     private String relationKeyName;
-    private int type;
+    private int type=0;
     private List<String> keyNames=new ArrayList<>();
     private List<String> fieldNames=new ArrayList<>();
     private Map<String,String> names=new HashMap<>();

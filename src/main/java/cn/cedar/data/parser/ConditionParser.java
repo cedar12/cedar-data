@@ -49,7 +49,7 @@ public class ConditionParser {
 	private final static String STR_QUESTION="?";
 	private final static String STR_DOLLAR="$";
 
-	private static Pattern IF_ELIF_ELSE=Pattern.compile(STR_IF.trim()+"\\s+(.+?):(.*?)("+STR_ELIF.trim()+"\\s+(.+?):(.*))+"+STR_END.trim(),Pattern.MULTILINE);
+	private static Pattern IF_ELIF_ELSE=Pattern.compile(STR_IF.trim()+"\\s+((.+?):(.*?))?("+STR_ELIF.trim()+"\\s+(.+?):(.*))+"+STR_END.trim(),Pattern.MULTILINE);
 	private static Pattern IF_ELSE=Pattern.compile(STR_IF.trim()+"\\s+(.+?):((.*?))"+STR_END.trim(),Pattern.MULTILINE);
 	private static Pattern PLACEHOLD=Pattern.compile("(\\?\\d+)|(\\$\\w+)",Pattern.MULTILINE);
 	private static Pattern TEST_PLACEHOLD = Pattern.compile("(\\?\\d+)",Pattern.MULTILINE);
@@ -98,8 +98,9 @@ public class ConditionParser {
 	}
 	
 	private static String condition(String input,Map<String,Object>args) {
-		input=elifElseEnd(input, args);
-		input=ifElseEnd(input, args);
+		//input=elifElseEnd(input, args);
+		//input=ifElseEnd(input, args);
+		input=ifEnd(input,args);
 		return input;
 	}
 	
@@ -163,6 +164,52 @@ public class ConditionParser {
 					}
 				}
 				input=input.replace(matcher.group(0), result);
+			}
+		}
+		return input;
+	}
+
+	private static String ifEnd(String input,Map<String,Object> args) {
+		Matcher matcher = IF_ELSE.matcher(input);
+		while (matcher.find()) {
+			if(matcher.groupCount()==3) {
+				String result=STR_EMPTY;
+				if(matcher.group(2).contains(STR_ELIF.trim())) {
+					String[] elses=matcher.group(2).split(STR_ELIF.trim());
+					if(test(matcher.group(1),args)) {
+						result=elses[0];
+					}else {
+						for(int i=1;i<elses.length;i++) {
+							String elif=elses[i];
+							String[] cond=elif.split(STR_SPLIT);
+							if(cond[1].contains(STR_ELSE.trim())) {
+								String[] elifelses=cond[1].split(STR_ELSE.trim());
+								if(test(cond[0],args)) {
+									result=elifelses[0];
+									break;
+								}else {
+									result=elifelses[1];
+									break;
+								}
+							}else if(test(cond[0],args)) {
+								result=cond[1];
+								break;
+							}
+						}
+					}
+				}else if(matcher.group(2).contains(STR_ELSE.trim())) {
+					String[] elses=matcher.group(2).split(STR_ELSE.trim());
+					if(test(matcher.group(1),args)) {
+						result=elses[0];
+					}else {
+						result=elses[1];
+					}
+				}else {
+					if(test(matcher.group(1),args)) {
+						result=matcher.group(2);
+					}
+				}
+				input=input.replace(matcher.group(0), result.trim());
 			}
 		}
 		return input;

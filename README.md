@@ -351,3 +351,10 @@ cedar-data-spring-boot-starter
 ## beta 计划
 #### beta.1.3.0
 .cd文件解析重构
+
+
+
+## cedar-data-file-syntax-highlight-for-eclipse_1.0.0.jar
+在eclipse中.cd文件语法高亮，提示的插件
+### 安装方法 
+将`cedar-data-file-syntax-highlight-for-eclipse_1.0.0.jar`文件复制到`eclipse根目录/plugins/`目录下，重启eclipse即可
