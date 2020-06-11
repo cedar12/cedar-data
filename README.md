@@ -2,6 +2,15 @@
 - 环境要求：`jdk1.7+`
 - 本文档适用于：`1.3.2+`
 
+![](https://img.shields.io/github/issues/cedar12/cedar-data.svg)
+![](https://img.shields.io/badge/jdk-1.7%2B-brightgreen.svg)
+![](https://img.shields.io/github/forks/cedar12/cedar-data.svg)
+![](https://img.shields.io/github/stars/cedar12/cedar-data.svg)
+![](https://img.shields.io/github/license/cedar12/cedar-data.svg)
+![](https://img.shields.io/badge/maven-com.github.cedar12-green.svg)
+![](https://img.shields.io/badge/language-java-green.svg)
+
+
 旧文档请移至[README_old.md](https://github.com/cedar12/cedar-data/README_old.md)
 
 ## Maven
@@ -94,7 +103,7 @@ add key:{
 #if 条件1:
  条件1真 
 #elif 条件2:
- 条件2正 
+ 条件2真
 #else
  条件1、条件2都为假
  #end
@@ -129,7 +138,7 @@ private query:{
 - /* 多行注释 */
 
 
-### 上手
+### 上手例子
 
 新建实体类如下
 ```java
@@ -144,22 +153,22 @@ public class Cat{
     	this.name = name;
     }
     //getter setter setter不写会直接注入到字段，优先注入setter
-	public Integer getId() {
-		return id;
-	}
-	public void setId(Integer id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	@Override
-	public String toString() {
-		return "Cat [id=" + id + ", name=" + name + "]";
-	}
+    public Integer getId() {
+        return id;
+    }
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    @Override
+    public String toString() {
+        return "Cat [id=" + id + ", name=" + name + "]";
+    }
     
 }
 ```
@@ -267,7 +276,6 @@ public class CatTest {
 }
 ```
 上手例子结束
-
 
 
 ## 让配置文件有颜色和提示
