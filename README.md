@@ -11,7 +11,7 @@
 ![](https://img.shields.io/badge/language-java-green.svg)
 
 
-旧文档请移至[README_old.md](https://github.com/cedar12/cedar-data/README_old.md)
+旧文档请移至[README_old.md](https://github.com/cedar12/cedar-data/blob/master/README_old.md)
 
 ## Maven
 ```xml
@@ -63,20 +63,19 @@ def queryTableTest=select * from #{table};
 
 #### sql体
 定义一个id为`query`的sql体，返回结果为`List<Map<String,Object>`如下：
-```sql
+```text
 query:{
     select * from test
 };
 ```
 返回结果为`List<实体类>`如下：
-```sql
+```text
 query 实体类全路径:{
     select * from test
 };
 ```
 insert语句返回自增长id（需数据库支持），使用`key`如下：
-- 注：insert（不使用key） update语句返回受影响行数
-```sql
+```text
 add key:{
     insert into test values(null,now())
 };
