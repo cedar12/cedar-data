@@ -75,6 +75,7 @@ query 实体类全路径:{
 };
 ```
 insert语句返回自增长id（需数据库支持），使用`key`如下：
+
 ```text
 add key:{
     insert into test values(null,now())
@@ -84,9 +85,10 @@ add key:{
 > 注：必需以`;`结束
 
 ### 动态sql
-- 支持||、&&、!=、==等逻辑运算符
+- 支持\||、&&、!=、==等逻辑运算符
 - 只能在sql体内使用
-> 注：不支持嵌套
+- 不支持嵌套
+
 ```text
 /*
 #if 条件:
@@ -105,7 +107,7 @@ add key:{
  条件2真
 #else
  条件1、条件2都为假
- #end
+#end
 */
 query:{
     select * from test 
