@@ -21,7 +21,6 @@ import cn.cedar.data.InParams;
 import cn.cedar.data.MapperData;
 import cn.cedar.data.annotation.Param;
 import cn.cedar.data.parser.CedarDataFileContentParser;
-import cn.cedar.data.parser.CedarDataORMParser;
 import cn.cedar.data.parser.ConditionParser;
 import cn.cedar.data.struct.Block;
 
@@ -106,11 +105,11 @@ public class StatementActuator extends HandlerConstant {
     public static Object perform(Method method, Block block, CedarDataFileContentParser cedarData){
         Object data=null;
         Class<?> cls=method.getReturnType();
-        String returnType=returnMap.get(method);
+        block.setTarget(cls);
         String sql=block.getSql();
         if(isDQL(sql)){
             if(isNumber(cls)!=-1){
-                data=performNumberDQL(cls,sql);
+                data=execute(sql,SQL_TYPE_QUERY_COUNT,block);
             }else if(InParams.isMap(cls)){
                 data=execute(sql,SQL_TYPE_QUERY_ONE,block);
             }else if(InParams.isList(cls)){
@@ -118,7 +117,6 @@ public class StatementActuator extends HandlerConstant {
                 if(InParams.isNull(block.getType())||block.getType().isEmpty()||MAP_SYMBOL.equalsIgnoreCase(block.getType())||"java.util.Map".equals(block.getType())){
                     data=mapList;
                 }else{
-                    data=new CedarDataORMParser(mapList,cedarData).parse(block.getType());
                     data=new MapperData(mapList).parse(block.getType());
                     if(data==null){
                         List<Object> list=new ArrayList<>();
@@ -137,14 +135,10 @@ public class StatementActuator extends HandlerConstant {
                 data= DataEncapsulation.encapsulation(cls, (Map<String, Object>) execute(sql,SQL_TYPE_QUERY_ONE,block));
             }
         }else{
-            if(isNumber(cls)!=-1){
-                if(returnType!=null&&returnType.equalsIgnoreCase(KEY_SYMBOL)){
-                    data=performNumberKeyDML(cls,sql);
-                }else {
-                    data = performNumberDML(cls, sql);
-                }
-            }else{
-                execute(sql,SQL_TYPE_UPDATE,block);
+            if(block.getType()!=null&&block.getType().equalsIgnoreCase(KEY_SYMBOL)){
+                data=execute(sql,SQL_TYPE_INSERT_KEY,block);
+            }else {
+                data=execute(sql,SQL_TYPE_UPDATE,block);
             }
         }
         return data;
@@ -190,9 +184,41 @@ public class StatementActuator extends HandlerConstant {
         }else if(type==SQL_TYPE_QUERY_ONE){
             return jdbc.excuteQueryOne(sql,obj);
         }else if(type==SQL_TYPE_UPDATE){
-            return jdbc.excute(sql,obj);
+            long res=jdbc.excute(sql,obj);
+            return castReturnType(block.getTarget(),res);
+        }else if(type==SQL_TYPE_INSERT_KEY){
+            int key=jdbc.excuteGetGeneratedKey(sql,obj);
+            return castReturnType(block.getTarget(),key);
+        }else if(type==SQL_TYPE_QUERY_COUNT){
+            long res=jdbc.excuteQueryCount(sql);
+            return castReturnType(block.getTarget(),res);
         }
         return null;
+    }
+
+    private static Object castReturnType(Class<?> o,Object value){
+        Object result=value;
+        if(InParams.isByte(o)){
+            result=Byte.parseByte(String.valueOf(value));
+        }else if(InParams.isShort(o)){
+            result=Short.parseShort(String.valueOf(value));
+        }else if(InParams.isInt(o)){
+            result=Integer.parseInt(String.valueOf(value));
+        }else if(InParams.isLong(o)){
+            result=Long.parseLong(String.valueOf(value));
+        }else if(InParams.isFloat(o)){
+            result=Float.parseFloat(String.valueOf(value));
+        }else if(InParams.isDouble(o)){
+            result=Double.parseDouble(String.valueOf(value));
+        }else if(o==Boolean.class||o==boolean.class){
+            int val=Integer.parseInt(String.valueOf(value));
+            if(value instanceof Number&&val>0){
+                result=true;
+            }else{
+                result=false;
+            }
+        }
+        return result;
     }
 
 

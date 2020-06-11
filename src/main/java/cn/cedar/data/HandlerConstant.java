@@ -101,6 +101,8 @@ public class HandlerConstant {
     protected static final int SQL_TYPE_QUERY=0;
     protected static final int SQL_TYPE_QUERY_ONE=1;
     protected static final int SQL_TYPE_UPDATE=2;
+    protected static final int SQL_TYPE_INSERT_KEY=3;
+    protected static final int SQL_TYPE_QUERY_COUNT=4;
 
 
 

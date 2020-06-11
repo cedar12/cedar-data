@@ -21,6 +21,7 @@ import cn.cedar.data.expcetion.NotFoundParameterException;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,10 +49,13 @@ public class ConditionParser {
 	private final static String STR_EMPTY="";
 	private final static String STR_QUESTION="?";
 	private final static String STR_DOLLAR="$";
+	private final static String STR_DOT="\\.";
+	private final static String STR_VALUE="v";
 
 	private static Pattern IF_ELIF_ELSE=Pattern.compile(STR_IF.trim()+"\\s+((.+?):(.*?))?("+STR_ELIF.trim()+"\\s+(.+?):(.*))+"+STR_END.trim(),Pattern.MULTILINE);
 	private static Pattern IF_ELSE=Pattern.compile(STR_IF.trim()+"\\s+(.+?):((.*?))"+STR_END.trim(),Pattern.MULTILINE);
-	private static Pattern PLACEHOLD=Pattern.compile("(\\?\\d+)|(\\$\\w+)",Pattern.MULTILINE);
+	//private static Pattern PLACEHOLD=Pattern.compile("(\\?\\d+)|(\\$\\w+)",Pattern.MULTILINE);
+	private static Pattern PLACEHOLD=Pattern.compile("(\\?\\d+(\\.\\w+)*)|(\\$\\w+(\\.\\w+)*)",Pattern.MULTILINE);
 	private static Pattern TEST_PLACEHOLD = Pattern.compile("(\\?\\d+)",Pattern.MULTILINE);
 
 	private Object[] values;
@@ -67,7 +71,40 @@ public class ConditionParser {
 		String sql=condition(input,args);
 		return placeholder(sql);
 	}
-	
+
+	private static void recursiveValue(Object value,String[] names,int i,Map<String,Object> result) {
+		if(value==null||names.length<=i) {
+			return;
+		}
+		try {
+			Field field=value.getClass().getDeclaredField(names[i].trim());
+			field.setAccessible(true);
+			Object res=field.get(value);
+			result.put(STR_VALUE, res);
+			recursiveValue(res,names,i+1,result);
+			field.setAccessible(false);
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private Object getValue(int i,String[] varNames) {
+		Object value=values[i];
+		if(varNames.length>1) {
+			Map<String,Object> valueMap=new HashMap<>();
+			recursiveValue(values[i],varNames,1,valueMap);
+			value = valueMap.get(STR_VALUE);
+		}
+		return value;
+	}
+
+
 	private Map<String,Object> placeholder(String input){
 		Map<String,Object> map=new HashMap<>();
 		List<Object> args=new ArrayList<>();
@@ -77,16 +114,20 @@ public class ConditionParser {
 			input=input.replace(group, STR_QUESTION);
 			int index=-1;
 			String name=group.substring(1);
+			String[] varNames=name.split(STR_DOT);
 			for (int i = 0; i < names.length; i++) {
-				if(names[i].equals(name)) {
-					args.add(values[i]);
+				if(names[i].equals(varNames[0].trim())) {
+					Object value=getValue(i,varNames);
+					args.add(value);
 					index=i;
 					break;
 				}
 			}
 			if(index==-1) {
 				try {
-					args.add(values[Integer.parseInt(name)-1]);
+					int i=Integer.parseInt(varNames[0].trim())-1;
+					Object value=getValue(i,varNames);
+					args.add(value);
 				}catch(ArrayIndexOutOfBoundsException | NumberFormatException e) {
 					throw new NotFoundParameterException(group);
 				}
