@@ -44,8 +44,8 @@ compile group: 'com.github.cedar12', name: 'cedar-data', version: '1.3.2'
 
 ### 语法格式
 
-#### 常量
-使用`def`关键字定义一个常量名`table`值为`test`的常量如下：
+#### 变量
+使用`def`关键字定义一个常量名`table`值为`test`的变量如下：
 ```text
 def table=test;
 ```
@@ -55,7 +55,7 @@ def table="  test  ";
 ```
 > 注：只能写在一行并已`;`结束
 #### 取值
-定义queryTableTest并使用常量table，使用`#{}`表达式取常量`table`的值如下：
+定义queryTableTest并使用常量table，使用`#{}`表达式取变量`table`的值如下：
 ```text
 def queryTableTest=select * from #{table};
 ```
