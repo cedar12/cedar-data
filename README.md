@@ -1,6 +1,6 @@
 # Cedar Data 数据持久层框架
 - 环境要求：`jdk1.7+`
-- 本文档适用于：`1.3.2+`
+- 本文档对应：`1.3.2+`
 
 ![](https://img.shields.io/github/issues/cedar12/cedar-data.svg)
 ![](https://img.shields.io/badge/jdk-1.7%2B-brightgreen.svg)
